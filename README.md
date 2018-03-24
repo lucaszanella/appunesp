@@ -1,6 +1,6 @@
-# JSCam
+# App Unesp
 
-React Native app for ONVIF cameras
+App for UNESP
 
 # How to 
 
