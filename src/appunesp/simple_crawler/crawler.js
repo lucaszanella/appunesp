@@ -1,5 +1,16 @@
-async function html_crawl(page, post_data=false, content_type=false, agent=false) {
-    const response = await fetch(page,
+import {Cookies} from 'cookies.js'
+
+//Will only update if the given cookieStore matches the domain of the given header
+update_cookies = function(header, cookieStore) {
+    //do some regex here to get cookies
+    for (cookie in cookies) {
+        //break cookie in key and value here
+        cookieStore.update(key, value);
+    }
+}
+
+export async function html_crawl(page, post_data=false, content_type=false, agent=false) {
+    const response = fetch(page,
     {
         body: post_data, // must match 'Content-Type' header
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
