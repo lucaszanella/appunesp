@@ -18,8 +18,10 @@ export class CookieStore {
 }
 
 export function locateCookiesInHeader(header) {
-    const cookiesRegex = /Set-Cookie:\s*([^=]+)=([^\;]+);\s?/g;
-    //var cookies = /^Set-Cookie: /.exec(header);
-    cookies = cookiesRegex.exec(header);
+    const cookiesRegex = /Set-Cookie:\s?([^=]+)=([^\n]+)/g;
+    cookies = []
+    while ((r = cookiesRegex.exec(header)) !== null) {
+      cookies.push({key: r[1], value: r[2]});
+    }
     return cookies;
 }
