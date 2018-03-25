@@ -1,5 +1,5 @@
-import {CookieStore} from '../simple_crawler/cookies.js'
-import {crawl} from '../simple_crawler/crawler.js'
+import { CookieStore } from '../simple_crawler/cookies.js'
+import { crawl }       from '../simple_crawler/crawler.js'
 
 const sisgrad_domain = `sistemas.unesp.br`;
 
@@ -16,20 +16,21 @@ export class SisgradCrawler {
     constructor(user_agent=false) {
         this.user_agent = user_agent;
         this.cookie_stores.push(CookieStore(sisgrad_domain));
+        this.crawl = (path, 
+                      user_agent = false, 
+                      post_data = false,
+                      cookie_stores=false) => {
+            crawl(path, user_agent, post_data, cookie_stores)
+        }
     }
 
     load_login_page = (previous_page=false) => {
-        return crawl(paths.login_form, 
-                     user_agent=this.user_agent, 
-                     cookie_stores=this.cookie_stores);
+        return crawl(paths.login_form);
     }
 
     perform_login = (username, password, previous_page=false) => {
         post = "username=" + username + "&" + "password=" + password;
 
-        return crawl(paths.login_action, 
-                     user_agent=this.user_agent,
-                     post_data=post, 
-                     cookie_stores=this.cookie_stores);
+        return crawl(paths.login_action, post_data=post);
     }
 }

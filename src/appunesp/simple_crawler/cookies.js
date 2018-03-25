@@ -1,6 +1,11 @@
 export class CookieStore {
     keys = {};
 
+    static locateInHeader(header) {
+        
+        return cookies;
+    }
+
     constructor(domain) {
         this.domain = domain;
     }
