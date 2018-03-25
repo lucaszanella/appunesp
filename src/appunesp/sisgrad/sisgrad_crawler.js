@@ -6,7 +6,7 @@ const sisgrad_domain = `sistemas.unesp.br`;
 const build_url = (path) => `https://` + sisgrad_domain + path;
 
 const paths = {
-    login_form:   build_url('/sentinela'), //login form
+    login_form  : build_url('/sentinela'),                  //login form
     login_action: build_url('/sentinela/login.open.action') //login form posts to this url
 }
 
