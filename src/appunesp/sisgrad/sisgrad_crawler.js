@@ -2,6 +2,7 @@ import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
 
 const sisgrad_domain = `sistemas.unesp.br`;
+//sisgrad_domain = `google.com`;
 
 const build_url = (path) => `https://` + sisgrad_domain + path;
 

@@ -1,5 +1,6 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
 const cheerio = require("cheerio-without-node-native");
+//const cheerio = require("cheerio");
 
 export async function crawl(url, 
                             post_data    = false, 
@@ -8,7 +9,9 @@ export async function crawl(url,
                             cookieStores = false,
                             redirect     = true  ) {
     headers = {};
-    headers['agent'] = agent ?  agent: 'mozilla...';
+    headers['Agent'] = agent ?  agent: 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
+    headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+    headers['Accept-Encoding'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
     content_type ? headers['content-type'] = content_type: null;
 
     if (cookieStores)
@@ -22,19 +25,24 @@ export async function crawl(url,
             headers       : headers,
             method        : post_data ? 'POST' : 'GET', // *GET, POST, PUT, DELETE, etc.
             redirect      : redirect ? 'follow' : 'manual', // *manual, follow, error. TODO: is manual the right keyword?
-            referrer      : 'no-referrer', // *client, no-referrer
+            referrer      : 'no-referrer', // *client, no-referrer,
+            keepalive     : true
         }
     );
 
     const http   = await response;
     const header = http.headers;
-    const html   = http.text();
-    console.log("text:");
-    console.log(http);
+    const html   = await http.text();
+
     cookieStores ? update_cookies(header, cookieStores): null;
     return {
-            header: header, 
-            body  : cheerio.load(html)
+            header     : header, 
+            redirected : http.redirected,
+            status     : http.status,
+            statusText : http.statusText,
+            url        : http.url,
+            useFinalURL: http.useFinalURL,
+            $          : cheerio.load(html)
            };
 }
 

@@ -18,8 +18,17 @@ import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 
 const Sisgrad = new SisgradCrawler();
 //flog("teste");
-console.log(Sisgrad.load_login_page());
-
+async function a() {
+  ({$, header}      = await Sisgrad.load_login_page());
+  //Do nothing, just loaded the page before to simulate user entering website
+  //The pabe above has an HTML redirect to the page below:
+  ({$, header, url} = await Sisgrad.perform_login());
+  
+  console.log('url: ' + url);
+  //console.log('redirected: ' + x.redirected);  
+  console.log($('form[name=formLogin]'));
+};
+a();
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
