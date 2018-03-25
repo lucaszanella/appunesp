@@ -10,7 +10,7 @@ export class CookieStore {
     }
 
     getEncoded = () => {
-        const s = "";
+        var s = "";
         for (var [cookie, value] of this.map.entries()) {
             s += cookie + "=" + value + "; ";
         }

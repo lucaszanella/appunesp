@@ -11,26 +11,25 @@ const paths = {
 }
 
 export class SisgradCrawler {
-    cookie_stores = [];
+    cookie_stores = [new CookieStore(sisgrad_domain)];
 
     constructor(user_agent=false) {
         this.user_agent = user_agent;
-        this.cookie_stores.push(CookieStore(sisgrad_domain));
         this.crawl = (path, 
-                      user_agent = false, 
-                      post_data = false,
-                      cookie_stores=false) => {
+                      user_agent    = false, 
+                      post_data     = false,
+                      cookie_stores = false) => {
             crawl(path, user_agent, post_data, cookie_stores)
         }
     }
 
     load_login_page = (previous_page=false) => {
+        console.log('loading login page...');
         return crawl(paths.login_form);
     }
 
     perform_login = (username, password, previous_page=false) => {
-        post = "username=" + username + "&" + "password=" + password;
-
-        return crawl(paths.login_action, post_data=post);
+        post = encodeURIComponent("username=" + username + "&" + "password=" + password);
+        return crawl(paths.login_action, post_data = post);
     }
 }

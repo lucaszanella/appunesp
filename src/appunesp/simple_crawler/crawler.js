@@ -7,8 +7,9 @@ export async function crawl(url,
                             agent        = false,
                             cookieStores = false,
                             redirect     = true  ) {
+    headers = {};
     headers['agent'] = agent ?  agent: 'mozilla...';
-    content_type ? headers['content-type'] = 'text': null;
+    content_type ? headers['content-type'] = content_type: null;
 
     if (cookieStores)
         cookieStores.domain.includes(url) ? headers['cookies'] = cookieStores.getEncoded() : null;
@@ -28,7 +29,8 @@ export async function crawl(url,
     const http   = await response;
     const header = http.headers;
     const html   = http.text();
-
+    console.log("text:");
+    console.log(http);
     cookieStores ? update_cookies(header, cookieStores): null;
     return {
             header: header, 

@@ -12,6 +12,15 @@ import {
   View
 } from 'react-native';
 
+flog = (msg) => console.log(":::" + msg);  
+
+import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
+
+const Sisgrad = new SisgradCrawler();
+//flog("teste");
+console.log(Sisgrad.load_login_page());
+
+
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
     'Cmd+D or shake for dev menu',
