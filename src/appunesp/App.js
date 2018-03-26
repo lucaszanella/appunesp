@@ -11,10 +11,10 @@ import {
   Text,
   View
 } from 'react-native';
+import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
+//const cheerioTableparser = require('cheerio-tableparser');
 
 flog = (msg) => console.log(":::" + msg);  
-
-import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 
 const Sisgrad = new SisgradCrawler();
 //flog("teste");
@@ -22,11 +22,47 @@ async function a() {
   ({$, header}      = await Sisgrad.load_login_page());
   //Do nothing, just loaded the page before to simulate user entering website
   //The pabe above has an HTML redirect to the page below:
-  ({$, header, url} = await Sisgrad.perform_login());
+  ({$, header, url} = await Sisgrad.perform_login_page());
+  forms = $('form');
+  var login_form = null;
+
+  if (forms.lenght == 0)
+    console.log('zero')
+  else if (forms.length == 1)
+    login_form = forms.first()
+  else if (t = $('form[name=formLogin]').lenght)
+    login_form = t
   
-  console.log('url: ' + url);
-  //console.log('redirected: ' + x.redirected);  
-  console.log($('form[name=formLogin]'));
+  login = login_form.serializeArray();
+
+  serialized = "";
+
+  login.map(item => {
+    if (item.name=='txt_usuario')
+      item.value = 'username'
+    if (item.name=='txt_senha')
+      item.value = 'password'
+    return item;
+  }).   map(item => 
+    serialized += "&" + item.name + "=" + item.value
+  );
+
+  serialized = serialized.substr(1, serialized.length); //removes first '&'
+
+  //console.log(login_form.val('action'));
+  ({$, header, url} = await Sisgrad.perform_login(url       = login_form.val('action'),
+                                                  form_data = serialized));
+  
+  console.log('done');
+  console.log($);
+  //cheerioTableparser($);
+  //console.log('url: ' + url);
+  //console.log('redirected: ' + x.redirected); 
+  //login_form = $('form[name=formLogin]');
+  //inputs     = login_form('input') 
+  //console.log($('form[name=formLogin]'));
+  //console.log($('form[name=formLogin]'));
+
 };
 a();
 

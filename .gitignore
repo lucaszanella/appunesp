@@ -3,3 +3,4 @@ dev/
 /src/appunesp/node_modules
 !/src/appunesp/node_modules/.gitkeep
 .idea
+src/lab/node_modules
