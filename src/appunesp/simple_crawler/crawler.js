@@ -64,6 +64,7 @@ export async function crawl(url,
 
 //Will only update if the given cookieStore matches the domain of the given header
 //Does not support cookies from domain to subdomains yet
+/*
 updateCookies = function(url, header, cookieStores) {
     for (cookieStore of cookieStores) {
         console.log('updating cookies')
@@ -79,3 +80,4 @@ updateCookies = function(url, header, cookieStores) {
         }
     }
 }
+*/

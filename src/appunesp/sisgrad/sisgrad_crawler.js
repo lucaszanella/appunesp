@@ -40,9 +40,64 @@ export class SisgradCrawler {
         }
     }
 
-    load_login_page = (previous_page=false) => {
+    performLogin = (username, password) => {
         console.log('loading login page...');
-        return this.crawl(paths.login_form);
+        c = this.crawl(paths.login_form);
+        //If we ended in the actual login page, it contains an HTML
+        //(not HTTP) redirect to the next page. Let's go to it.
+        if (/\/sentinela/.test(c.url) && !/\/sentinela\/.+/.test(c.url)) {
+            console.log('redirecting manually to ' + paths.login_form_redirected + '...');
+            c = this.crawl(decide(undefined, paths.login_form_redirected));
+        }
+        //If we're in the login.open.action, we should find a form there
+        //so we fill this form an then send it
+        if (/\/sentinela\/login.open.action/.test(c.url)) {
+            console.log('doing login to ' + paths.login_action + '...');
+            c = this.crawl(decide(undefined, paths.login_action));
+            $ = c.$;
+            forms = $('form');
+            var login_form = null;
+          
+            if (forms.lenght == 0)
+              console.log('no form found')
+            else if (forms.length == 1)
+              login_form = forms.first()
+            else if (t = $('form[name=formLogin]').lenght)
+              login_form = t
+            
+            login = login_form.serializeArray();
+            
+            /*
+              Cheerio non-node version`s serializeArray doesn't work. 
+              Small tweak before I fix things:
+            */
+            login = [ { name: 'txt_usuario', value: '' },
+                     { name: 'txt_senha', value: '' } ]
+            
+            serialized = "";
+          
+            login.map(item => {
+              if (item.name=='txt_usuario')
+                item.value = username
+              if (item.name=='txt_senha')
+                item.value = password
+              return item;
+            }).   map(item => 
+              serialized += "&" + item.name + "=" + item.value
+            );
+          
+            serialized = serialized.substr(1, serialized.length); //removes first '&'
+            //if (serialized)
+                post = encodeURI(serialized);
+            //else
+                //post = encodeURIComponent("username=" + username + "&" + "password=" + password);
+            console.log('encoded uri: ' + post + '. Sending login NOW:');
+            c = this.crawl(decide(undefined, paths.login_action), postData = post);
+            console.log('url now: ' + c.url);
+            console.log(c.text());
+        }
+        //TODO: If c contains login success, return true. Otherwise return false
+        return c;
     }
 
     //We know the URL login, but it can change, so let's prefer the suggested url

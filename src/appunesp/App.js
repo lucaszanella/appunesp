@@ -19,63 +19,13 @@ import { username, password } from './credentials.js';
 flog = (msg) => console.log(":::" + msg);  
 
 const Sisgrad = new SisgradCrawler();
-//flog("teste");
-async function a() {
-  ({$, header}      = await Sisgrad.load_login_page());
-  //Do nothing, just loaded the page before to simulate user entering website
-  //The pabe above has an HTML redirect to the page below:
-  ({$, header, url} = await Sisgrad.perform_login_page());
-  forms = $('form');
-  var login_form = null;
 
-  if (forms.lenght == 0)
-    console.log('zero')
-  else if (forms.length == 1)
-    login_form = forms.first()
-  else if (t = $('form[name=formLogin]').lenght)
-    login_form = t
-  
-  login = login_form.serializeArray();
-  
-  /*
-    Cheerio non-node version`s serializeArray doesn't work. 
-    Small tweak before I fix things:
-  */
- login = [ { name: 'txt_usuario', value: '' },
-           { name: 'txt_senha', value: '' } ]
-  
-  serialized = "";
+async function login(username, password) {
+  console.log('initiating login...');
+  l = Sisgrad.performLogin(username, password);
+}
+login(username, password);
 
-  login.map(item => {
-    if (item.name=='txt_usuario')
-      item.value = username
-    if (item.name=='txt_senha')
-      item.value = password
-    return item;
-  }).   map(item => 
-    serialized += "&" + item.name + "=" + item.value
-  );
-
-  serialized = serialized.substr(1, serialized.length); //removes first '&'
-
-  console.log(login_form.val('action'));
-  console.log('serialized: ' + serialized);
-  ({$, header, url} = await Sisgrad.perform_login(url       = login_form.val('action'),
-                                                  form_data = serialized));
-  
-  console.log('done');
-  //console.log(url);
-  console.log($('body').text());
-  //cheerioTableparser($);
-  //console.log('url: ' + url);
-  //console.log('redirected: ' + x.redirected); 
-  //login_form = $('form[name=formLogin]');
-  //inputs     = login_form('input') 
-  //console.log($('form[name=formLogin]'));
-  //console.log($('form[name=formLogin]'));
-
-};
-a();
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
