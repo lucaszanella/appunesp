@@ -14,6 +14,7 @@ export class CookieStore {
         for (var [cookie, value] of this.map.entries()) {
             s += cookie + "=" + value + "; ";
         }
+        return s;
     }
 }
 

@@ -12,6 +12,8 @@ import {
   View
 } from 'react-native';
 import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
+import { username, password } from './credentials.js';
+
 //const cheerioTableparser = require('cheerio-tableparser');
 
 flog = (msg) => console.log(":::" + msg);  
@@ -33,15 +35,18 @@ async function a() {
   else if (t = $('form[name=formLogin]').lenght)
     login_form = t
   
-  login = login_form.serializeArray();
+  console.log(login_form.html())
 
+  login = login_form.serializeArray();
+  console.log('login:')
+  console.log(login)
   serialized = "";
 
   login.map(item => {
     if (item.name=='txt_usuario')
-      item.value = 'username'
+      item.value = username
     if (item.name=='txt_senha')
-      item.value = 'password'
+      item.value = password
     return item;
   }).   map(item => 
     serialized += "&" + item.name + "=" + item.value
@@ -49,12 +54,14 @@ async function a() {
 
   serialized = serialized.substr(1, serialized.length); //removes first '&'
 
-  //console.log(login_form.val('action'));
+  console.log(login_form.val('action'));
+  console.log('serialized: ' + serialized);
   ({$, header, url} = await Sisgrad.perform_login(url       = login_form.val('action'),
                                                   form_data = serialized));
   
   console.log('done');
-  console.log($);
+  //console.log(url);
+  //console.log($('body').text());
   //cheerioTableparser($);
   //console.log('url: ' + url);
   //console.log('redirected: ' + x.redirected); 

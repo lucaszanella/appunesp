@@ -1,12 +1,12 @@
 import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
 
-const sisgrad_domain = `sistemas.unesp.br`;
+const sisgradDomain = `sistemas.unesp.br`;
 //sisgrad_domain = `google.com`;
 
 //const cheerioTableparser = require('cheerio-tableparser');
 
-const build_url = (path) => `https://` + sisgrad_domain + path;
+const build_url = (path) => `https://` + sisgradDomain + path;
 
 const paths = {
     login_form            : build_url('/sentinela'),                   //login form
@@ -17,27 +17,37 @@ const paths = {
 decide = (url, alternative) => url = url ? url : alternative;
 
 export class SisgradCrawler {
-    cookie_stores = [new CookieStore(sisgrad_domain)];
+    cookieStores = [new CookieStore(sisgradDomain)];
 
-    constructor(user_agent=false) {
-        this.user_agent = user_agent;
-        this.crawl = (path, 
-                      user_agent    = false, 
-                      post_data     = false,
-                      cookie_stores = false) => {
-            crawl(path, user_agent, post_data, cookie_stores)
+    constructor(userAgent=false) {
+        this.userAgent = userAgent;
+
+        this.crawl = (path,
+                      postData      = false,
+                      contentType   = false,                         
+                      userAgent     = false, 
+                      cookieStores  = false,
+                      redirect      = false) => {
+            //If no cookie stores passed, use the default one
+            cookieStores = cookieStores ? false : this.cookieStores;
+
+            return crawl(path,
+                         postData     = postData, 
+                         contentType  = contentType,                         
+                         userAgent    = this.userAgent, 
+                         cookieStores = cookieStores,
+                         redirect     = redirect)
         }
     }
 
-
     load_login_page = (previous_page=false) => {
         console.log('loading login page...');
-        return crawl(paths.login_form);
+        return this.crawl(paths.login_form);
     }
 
     //We know the URL login, but it can change, so let's prefer the suggested url
     perform_login_page = (url, previous_page=false) => {
-        return crawl(decide(url, paths.login_form_redirected));
+        return this.crawl(decide(url, paths.login_form_redirected));
     }
 
     perform_login = (url=undefined, form_data=false, username=false, password=false, previous_page=false) => {
@@ -45,6 +55,6 @@ export class SisgradCrawler {
           post = form_data
         else
           post = encodeURIComponent("username=" + username + "&" + "password=" + password);
-        return crawl(decide(url, paths.login_action), post_data = post);
+        return this.crawl(decide(url, paths.login_action), post_data = post);
     }
 }

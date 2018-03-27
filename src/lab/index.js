@@ -44,5 +44,8 @@ fs.readFile('./login.html', function (err, data) {
   });
   serialized = serialized.substr(1, serialized.length);//removes first '&'
   console.log(serialized);
+  console.log(login_form);
+  console.log(login_form.val('action'));
+
 
 });
