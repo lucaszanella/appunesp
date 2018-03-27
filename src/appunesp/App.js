@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 import { username, password } from './credentials.js';
-
+//GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 //const cheerioTableparser = require('cheerio-tableparser');
 
 flog = (msg) => console.log(":::" + msg);  
@@ -35,11 +35,15 @@ async function a() {
   else if (t = $('form[name=formLogin]').lenght)
     login_form = t
   
-  console.log(login_form.html())
-
   login = login_form.serializeArray();
-  console.log('login:')
-  console.log(login)
+  
+  /*
+    Cheerio non-node version`s serializeArray doesn't work. 
+    Small tweak before I fix things:
+  */
+ login = [ { name: 'txt_usuario', value: '' },
+           { name: 'txt_senha', value: '' } ]
+  
   serialized = "";
 
   login.map(item => {
@@ -61,7 +65,7 @@ async function a() {
   
   console.log('done');
   //console.log(url);
-  //console.log($('body').text());
+  console.log($('body').text());
   //cheerioTableparser($);
   //console.log('url: ' + url);
   //console.log('redirected: ' + x.redirected); 

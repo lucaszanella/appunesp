@@ -52,7 +52,7 @@ export class SisgradCrawler {
 
     perform_login = (url=undefined, form_data=false, username=false, password=false, previous_page=false) => {
         if (form_data)
-          post = form_data
+          post = encodeURI(form_data)
         else
           post = encodeURIComponent("username=" + username + "&" + "password=" + password);
         return this.crawl(decide(url, paths.login_action), post_data = post);

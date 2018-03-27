@@ -1,6 +1,7 @@
 const cheerio = require("cheerio");
 const cheerioTableparser = require('cheerio-tableparser');
 
+
 pickLargest = function(context, selector) {
 
 }
@@ -16,7 +17,7 @@ fs.readFile('./login.html', function (err, data) {
   }
   //console.log(data.toString());
   $ = cheerio.load(data.toString());
-  cheerioTableparser($);
+  //cheerioTableparser($);
   //console.log($);
 
   forms = $('form');
@@ -30,7 +31,9 @@ fs.readFile('./login.html', function (err, data) {
     login_form = t
   
   login = login_form.serializeArray();
-
+  console.log(login_form.val('action'));
+  console.log(login_form.html())
+  console.log(login)
   serialized = ""
 
   login.map((item) => {
@@ -43,9 +46,9 @@ fs.readFile('./login.html', function (err, data) {
     serialized += "&" + item.name + "=" + item.value;
   });
   serialized = serialized.substr(1, serialized.length);//removes first '&'
-  console.log(serialized);
-  console.log(login_form);
-  console.log(login_form.val('action'));
+  //console.log(serialized);
+  //console.log(login_form);
+  //console.log(login_form.val('action'));
 
 
 });

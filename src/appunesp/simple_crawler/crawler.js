@@ -20,26 +20,29 @@ export async function crawl(url,
     headers = {};
     headers['Agent'] = userAgent ?  userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-    headers['Accept-Encoding'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-    contentType ? headers['Content-type'] = contentType: 'application/x-www-form-urlencoded';
-
-    if (cookieStores) 
-        for (cookieStore of cookieStores) 
-            url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
+    //headers['Accept-Encoding'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+    headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
+    //if (cookieStores) 
+    //    for (cookieStore of cookieStores) 
+    //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
         
-    console.log('cookies: ' + headers['cookies'])
     
     const response = fetch(
         url,
         {
             body          : postData ? postData : undefined, // must match 'Content-Type' header
-            cache         : 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             headers       : headers,
             method        : postData ? 'POST' : 'GET', // *GET, POST, PUT, DELETE, etc.
-            redirect      : redirect  ? 'follow' : 'manual', // *manual, follow, error. TODO: is manual the right keyword?
+            //redirect      : true,//redirect ? 'follow' : 'manual', // *manual, follow, error. TODO: is manual the right keyword?
             referrer      : 'no-referrer', // *client, no-referrer,
-            keepalive     : true
-            //credentials   : 'same-origin'
+            keepalive     : true,
+            //credentials   : 'include',
+            //mode          : 'cors'
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, same-origin, *omit
+            mode: 'cors', // no-cors, cors, *same-origin
+            redirect: 'follow', // *manual, follow, error
+            referrer: 'no-referrer', // *client, no-referrer
         }
     );
 
@@ -47,7 +50,7 @@ export async function crawl(url,
     const header = http.headers;
     const html   = await http.text();
 
-    cookieStores ? updateCookies(http.url, header, cookieStores): null;
+    //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
             header     : header, 
             redirected : http.redirected,
