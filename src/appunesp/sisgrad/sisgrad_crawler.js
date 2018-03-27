@@ -40,20 +40,22 @@ export class SisgradCrawler {
         }
     }
 
-    performLogin = (username, password) => {
+    performLogin = async function(username, password) {
         console.log('loading login page...');
-        c = this.crawl(paths.login_form);
+        c = await this.crawl(paths.login_form);
+        console.log(c.url)
         //If we ended in the actual login page, it contains an HTML
         //(not HTTP) redirect to the next page. Let's go to it.
         if (/\/sentinela/.test(c.url) && !/\/sentinela\/.+/.test(c.url)) {
             console.log('redirecting manually to ' + paths.login_form_redirected + '...');
-            c = this.crawl(decide(undefined, paths.login_form_redirected));
+            c = await this.crawl(decide(undefined, paths.login_form_redirected));
         }
+        console.log(c.url)
         //If we're in the login.open.action, we should find a form there
         //so we fill this form an then send it
         if (/\/sentinela\/login.open.action/.test(c.url)) {
             console.log('doing login to ' + paths.login_action + '...');
-            c = this.crawl(decide(undefined, paths.login_action));
+            c = await this.crawl(decide(undefined, paths.login_action));
             $ = c.$;
             forms = $('form');
             var login_form = null;
@@ -92,9 +94,15 @@ export class SisgradCrawler {
             //else
                 //post = encodeURIComponent("username=" + username + "&" + "password=" + password);
             console.log('encoded uri: ' + post + '. Sending login NOW:');
-            c = this.crawl(decide(undefined, paths.login_action), postData = post);
+            c = await this.crawl(decide(undefined, paths.login_action), postData = post);
             console.log('url now: ' + c.url);
-            console.log(c.text());
+            console.log(c.$.text());
+        }
+        if (/\/sentinela\/sentinela.showDesktop.action/.test(c.url)) {
+            console.log(c.$.text());
+            console.log(c.$.html());
+
+            return true;
         }
         //TODO: If c contains login success, return true. Otherwise return false
         return c;
