@@ -78,9 +78,9 @@ export default class App extends Component<Props> {
          data={this.state.data}
          renderItem={({item}) => 
            (
-            <View>
+            <View style={{flex: 1, flexDirection: 'column', marginBottom:5}}>
             <Text style={styles.subject}>{item.subject}</Text>
-            <Text style={styles.sentby}>{item.sentby}</Text>
+            <Text style={styles.sentby}>{item.sentBy}</Text>
             </View>
            )
           }
@@ -106,13 +106,16 @@ const styles = StyleSheet.create({
   subject: {
     fontSize: 13,
     textAlign: 'left',
-    margin: 10,
+    marginLeft: 10,
+    marginRight: 10,
+
   },
   sentby: {
     fontSize: 10,
     textAlign: 'left',
-    margin: 10,
-  },
+    marginLeft: 10,
+    marginRight: 10,
+    },
   instructions: {
     textAlign: 'center',
     color: '#333333',

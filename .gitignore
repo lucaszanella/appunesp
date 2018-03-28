@@ -5,3 +5,5 @@ dev/
 .idea
 src/lab/node_modules
 src/appunesp/credentials.js
+src/appunesp/__tests__
+.vscode
