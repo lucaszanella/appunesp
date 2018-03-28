@@ -19,10 +19,12 @@ import { username, password } from './credentials.js';
 flog = (msg) => console.log(":::" + msg);  
 
 const Sisgrad = new SisgradCrawler();
-
+//https://sistemas.unesp.br/sentinela/common.openMessage.action?emailTipo=recebidas
 async function login(username, password) {
   console.log('initiating login...');
-  l = Sisgrad.performLogin(username, password);
+  l = await Sisgrad.performLogin(username, password);
+  l ? console.log('logged in!') : null;
+  l = await Sisgrad.readMessages();
 }
 login(username, password);
 

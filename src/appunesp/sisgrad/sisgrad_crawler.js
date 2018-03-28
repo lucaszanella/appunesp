@@ -4,14 +4,15 @@ import { crawl }       from '../simple_crawler/crawler.js'
 const sisgradDomain = `sistemas.unesp.br`;
 //sisgrad_domain = `google.com`;
 
-//const cheerioTableparser = require('cheerio-tableparser');
+const cheerioTableparser = require('cheerio-tableparser');
 
 const build_url = (path) => `https://` + sisgradDomain + path;
 
 const paths = {
     login_form            : build_url('/sentinela'),                   //login form
     login_form_redirected : build_url('/sentinela/login.open.action'), //login form posts to this url
-    login_action          : build_url('/sentinela/login.action')       //actual login
+    login_action          : build_url('/sentinela/login.action'),      //actual login
+    read_messages_action  : build_url('/sentinela/common.openMessage.action?emailTipo=recebidas')
 }
 //No URL suggestion? Use the alternative
 decide = (url, alternative) => url = url ? url : alternative;
@@ -96,28 +97,43 @@ export class SisgradCrawler {
             console.log('encoded uri: ' + post + '. Sending login NOW:');
             c = await this.crawl(decide(undefined, paths.login_action), postData = post);
             console.log('url now: ' + c.url);
-            console.log(c.$.text());
+            //console.log(c.$.text());
         }
         if (/\/sentinela\/sentinela.showDesktop.action/.test(c.url)) {
-            console.log(c.$.text());
-            console.log(c.$.html());
+            //console.log(c.$.text());
+            //console.log(c.$.html());
 
             return true;
         }
         //TODO: If c contains login success, return true. Otherwise return false
-        return c;
+        return false;
     }
 
-    //We know the URL login, but it can change, so let's prefer the suggested url
-    perform_login_page = (url, previous_page=false) => {
-        return this.crawl(decide(url, paths.login_form_redirected));
-    }
+    readMessages = async function(page = 0) {
+        c = await this.crawl(decide(undefined, paths.read_messages_action));
+        
+        if (/\/sentinela\/common.openMessage.action\?emailTipo=recebidas/.test(c.url)) {
+            $ = c.$;
+            cheerioTableparser($);
+            table = $('#destinatario').parsetable();
+            data = [];
+            //console.log(table[0][1]);
+            clean = (string) => string.replace(/ /g,'');
+            for (var i in table[0]) {
+                if (i != 0) {
+                    data.push({
+                        favorite       : clean(table[0][i]),
+                        hasAttachment  : clean(table[1][i]),
+                        sentBy         : clean(table[2][i]),
+                        subject        : clean(table[3][i]),
+                        sentDate       : clean(table[4][i]),
+                        readDate       : clean(table[5][i])
+                    })
+                }
+            }
+            console.log(data);
+            //console.log(table.html());
+        }
 
-    perform_login = (url=undefined, form_data=false, username=false, password=false, previous_page=false) => {
-        if (form_data)
-          post = encodeURI(form_data)
-        else
-          post = encodeURIComponent("username=" + username + "&" + "password=" + password);
-        return this.crawl(decide(url, paths.login_action), post_data = post);
     }
 }
