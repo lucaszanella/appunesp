@@ -118,7 +118,7 @@ export class SisgradCrawler {
             table = $('#destinatario').parsetable(false, false, true);
             data = [];
             //console.log(table[0][1]);
-            clean = (string) => string.replace(/ /g,'');
+            clean = (string) => string.replace(/[ \t]+$/g,'');
             for (var i in table[0]) {
                 if (i != 0) {
                     data.push({
