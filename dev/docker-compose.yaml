@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  appunespdev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /home/project/src/appunesp
+    image: appunespdev
+    stdin_open: true
+    tty: true
+    #entrypoint: /my_entrypoint.sh
+    network_mode: "host"
+    privileged: false
+    volumes:
+     - "../src/appunesp:/home/project/src/appunesp"
+     - "../dev/lab:/home/project/src/lab"
+     - "./node_modules:/home/project/src/appunesp/node_modules"
+     - "/etc/group:/etc/group:ro"
+     - "/etc/sudoers:/etc/sudoers:ro"
+     - "/etc/shadow:/etc/shadow:ro"
+     - "/etc/passwd:/etc/passwd:ro"
+     - "/tmp/.X11-unix:/tmp/.X11-unix"
+

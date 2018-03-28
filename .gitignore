@@ -1,5 +1,3 @@
-/dev/
-dev/
 /src/appunesp/node_modules
 !/src/appunesp/node_modules/.gitkeep
 .idea
@@ -7,3 +5,8 @@ src/lab/node_modules
 src/appunesp/credentials.js
 src/appunesp/__tests__
 .vscode
+dev/home
+dev/node_modules
+dev/src
+dev/dev
+dev/lab/node_modules
