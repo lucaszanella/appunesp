@@ -1,14 +1,33 @@
 import React, { Component } from "react";
 import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import { List, ListItem, SearchBar } from "react-native-elements";
+import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
+
+const Sisgrad = new SisgradCrawler();
+
+async function login(username, password) {
+    console.log('initiating login...');
+    l = await Sisgrad.performLogin(username, password);
+    l ? console.log('logged in!') : null;
+    l = await Sisgrad.readMessages();
+    return l;
+}
 
 class MessagesViewer extends Component {
+
   constructor(props) {
     super(props);
 
     this.state = {
       loading: false,
-      data: [],
+      data: [{
+        favorite       : '',
+        hasAttachment  : '',
+        sentBy         : 'lucas zanella',
+        subject        : 'assunto',
+        sentDate       : '01/01/01',
+        readDate       : '01/01/02'
+      }],
       page: 1,
       seed: 1,
       error: null,
@@ -19,6 +38,8 @@ class MessagesViewer extends Component {
 
   componentDidMount() {
     this.setState({ ready: true, loading: true });
+    l = login(username, password);
+    this.setState({loading: false, data: l});
   }
 /*
   makeRemoteRequest = () => {
@@ -107,12 +128,13 @@ class MessagesViewer extends Component {
           renderItem={({ item }) => (
             <ListItem
               roundAvatar
-              title={`${item.name.first} ${item.name.last}`}
-              subtitle={item.email}
-              avatar={{ uri: item.picture.thumbnail }}
+              title={`${item.sentBy}`}
+              subtitle={item.subject}
+              //avatar={{ uri: item.picture.thumbnail }}
               containerStyle={{ borderBottomWidth: 0 }}
             />
           )}
+          /*
           keyExtractor={item => item.email}
           ItemSeparatorComponent={this.renderSeparator}
           ListHeaderComponent={this.renderHeader}
@@ -121,6 +143,7 @@ class MessagesViewer extends Component {
           refreshing={this.state.refreshing}
           onEndReached={this.handleLoadMore}
           onEndReachedThreshold={50}
+          */
         />
       </List>
     );

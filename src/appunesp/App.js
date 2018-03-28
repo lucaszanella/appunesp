@@ -9,25 +9,23 @@ import {
   Platform,
   StyleSheet,
   Text,
-  View
+  View,
+  FlatList,
 } from 'react-native';
+import { List, ListItem, SearchBar } from "react-native-elements";
 import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 import { username, password } from './credentials.js';
 //GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 //const cheerioTableparser = require('cheerio-tableparser');
 
-flog = (msg) => console.log(":::" + msg);  
-
 const Sisgrad = new SisgradCrawler();
-//https://sistemas.unesp.br/sentinela/common.openMessage.action?emailTipo=recebidas
 async function login(username, password) {
   console.log('initiating login...');
   l = await Sisgrad.performLogin(username, password);
   l ? console.log('logged in!') : null;
   l = await Sisgrad.readMessages();
+  return l;
 }
-login(username, password);
-
 
 const instructions = Platform.select({
   ios: 'Press Cmd+R to reload,\n' +
@@ -38,18 +36,56 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loading: false,
+      data: [{
+        favorite       : '',
+        hasAttachment  : '',
+        sentBy         : 'lucas zanella',
+        subject        : 'assunto',
+        sentDate       : '01/01/01',
+        readDate       : '01/01/02'
+      }],
+      page: 1,
+      seed: 1,
+      error: null,
+      refreshing: false
+    };
+
+  }
+  componentDidMount() {
+    login(username, password).then(x=>{
+      this.setState({
+        data: x,
+        loading: false,
+        refreshing: false
+      });
+      //console.log('x');
+      console.log(x);
+    });
+    
+  }
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>
-          Welcome to React Native!
+            Unesp
         </Text>
-        <Text style={styles.instructions}>
-          To get started, edit App.js
-        </Text>
-        <Text style={styles.instructions}>
-          {instructions}
-        </Text>
+        <FlatList
+         data={this.state.data}
+         renderItem={({item}) => 
+           (
+            <View>
+            <Text style={styles.subject}>{item.subject}</Text>
+            <Text style={styles.sentby}>{item.sentby}</Text>
+            </View>
+           )
+          }
+          keyExtractor={item => item.subject+item.sentby+item.sentDate}
+        />
       </View>
     );
   }
@@ -65,6 +101,16 @@ const styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
+    margin: 10,
+  },
+  subject: {
+    fontSize: 13,
+    textAlign: 'left',
+    margin: 10,
+  },
+  sentby: {
+    fontSize: 10,
+    textAlign: 'left',
     margin: 10,
   },
   instructions: {

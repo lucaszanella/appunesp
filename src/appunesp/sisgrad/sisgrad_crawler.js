@@ -115,7 +115,7 @@ export class SisgradCrawler {
         if (/\/sentinela\/common.openMessage.action\?emailTipo=recebidas/.test(c.url)) {
             $ = c.$;
             cheerioTableparser($);
-            table = $('#destinatario').parsetable();
+            table = $('#destinatario').parsetable(false, false, true);
             data = [];
             //console.log(table[0][1]);
             clean = (string) => string.replace(/ /g,'');
@@ -131,9 +131,9 @@ export class SisgradCrawler {
                     })
                 }
             }
-            console.log(data);
+            //console.log(data);
             //console.log(table.html());
         }
-
+        return data;
     }
 }
