@@ -15,6 +15,7 @@ import {
 import { List, ListItem, SearchBar } from "react-native-elements";
 import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 import { username, password } from './credentials.js';
+const md5 = require("blueimp-md5");
 const Realm = require('realm');
 //GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 //const cheerioTableparser = require('cheerio-tableparser');
@@ -35,17 +36,21 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-const schemas = [{
-  name: 'message', 
-  properties: {
-               favorite       : 'string',
-               hasAttachment  : 'string',
-               sentBy         : 'string',
-               subject        : 'string',
-               sentDate       : 'string',
-               readDate       : 'string'
-              }
-}];
+const schemas = [
+  {
+    name: 'message', 
+    primaryKey: 'id',
+    properties: {
+      id             : 'string',
+      favorite       : 'string',
+      hasAttachment  : 'string',
+      sentBy         : 'string',
+      subject        : 'string',
+      sentDate       : 'string',
+      readDate       : 'string'
+    }
+  }
+];
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -81,27 +86,35 @@ export default class App extends Component<Props> {
 
     login(username, password).then(messages => {
       Realm.open({schema: schemas}).then(realm => {
-        /*
-        for (message of messages) 
+      /*
         realm.write(() => {
-            realm.create('message', {
-                favorite       : message.favorite,
-                hasAttachment  : message.hasAttachment,
-                sentBy         : message.sentBy,
-                subject        : message.subject,
-                sentDate       : message.sentDate,
-                readDate       : message.readDate
-            });
-        });
-      });
+          for (message of messages) {
+            id = md5(message.favorite      +
+                     message.hasAttachment +
+                     message.sentBy        +
+                     message.subject       + 
+                     message.sentDate      + 
+                     message.readDate)
+            if (!realm.objects('message'))
+              realm.create('message', {
+                  id             : id                   ,
+                  favorite       : message.favorite     ,
+                  hasAttachment  : message.hasAttachment,
+                  sentBy         : message.sentBy       ,
+                  subject        : message.subject      ,
+                  sentDate       : message.sentDate     ,
+                  readDate       : message.readDate     ,
+              })
+          }
+        })
+      })
       */
       this.setState({
         //data: x,
         loading: false,
         refreshing: false
-      });
-    });
-    
+        })
+    })
   }
   render() {
     return (
