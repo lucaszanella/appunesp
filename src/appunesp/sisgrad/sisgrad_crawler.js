@@ -1,10 +1,9 @@
 import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
+const cheerioTableparser = require('cheerio-tableparser');
 
 const sisgradDomain = `sistemas.unesp.br`;
 //sisgrad_domain = `google.com`;
-
-const cheerioTableparser = require('cheerio-tableparser');
 
 const build_url = (path) => `https://` + sisgradDomain + path;
 
@@ -18,7 +17,7 @@ const paths = {
 decide = (url, alternative) => url = url ? url : alternative;
 
 export class SisgradCrawler {
-    cookieStores = [new CookieStore(sisgradDomain)];
+    //cookieStores = [new CookieStore(sisgradDomain)];
 
     constructor(userAgent=false) {
         this.userAgent = userAgent;
@@ -30,7 +29,7 @@ export class SisgradCrawler {
                       cookieStores  = false,
                       redirect      = false) => {
             //If no cookie stores passed, use the default one
-            cookieStores = cookieStores ? false : this.cookieStores;
+            //cookieStores = cookieStores ? false : this.cookieStores;
 
             return crawl(path,
                          postData     = postData, 
@@ -118,7 +117,7 @@ export class SisgradCrawler {
             table = $('#destinatario').parsetable(false, false, true);
             data = [];
             //console.log(table[0][1]);
-            clean = (string) => string.replace(/[ \t]+$/g,'');
+            clean = (string) => string.replace(/[ \t]+$/g,'');//removes extra whitespace
             for (var i in table[0]) {
                 if (i != 0) {
                     data.push({

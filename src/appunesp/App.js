@@ -15,6 +15,7 @@ import {
 import { List, ListItem, SearchBar } from "react-native-elements";
 import { SisgradCrawler } from './sisgrad/sisgrad_crawler.js';
 import { username, password } from './credentials.js';
+const Realm = require('realm');
 //GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 //const cheerioTableparser = require('cheerio-tableparser');
 
@@ -34,6 +35,18 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
+const schemas = [{
+  name: 'message', 
+  properties: {
+               favorite       : 'string',
+               hasAttachment  : 'string',
+               sentBy         : 'string',
+               subject        : 'string',
+               sentDate       : 'string',
+               readDate       : 'string'
+              }
+}];
+
 type Props = {};
 export default class App extends Component<Props> {
   constructor(props) {
@@ -41,30 +54,52 @@ export default class App extends Component<Props> {
 
     this.state = {
       loading: false,
-      data: [{
-        favorite       : '',
-        hasAttachment  : '',
-        sentBy         : 'lucas zanella',
-        subject        : 'assunto',
-        sentDate       : '01/01/01',
-        readDate       : '01/01/02'
-      }],
+      data: [],
       page: 1,
       seed: 1,
       error: null,
-      refreshing: false
+      refreshing: false,
+      realm: null,
+      messages: null
     };
 
   }
+
+  componentWillMount() {
+    Realm.open({
+      schema: schemas
+    }).then(realm => {
+      console.log('realm loaded');
+      this.setState({ realm });
+      this.setState({ data: realm.objects('message')});
+    });
+  }
+
   componentDidMount() {
-    login(username, password).then(x=>{
+    console.log("componentDidMount----------------------------------------");
+    console.log(this.state.realm);
+
+    login(username, password).then(messages => {
+      Realm.open({schema: schemas}).then(realm => {
+        /*
+        for (message of messages) 
+        realm.write(() => {
+            realm.create('message', {
+                favorite       : message.favorite,
+                hasAttachment  : message.hasAttachment,
+                sentBy         : message.sentBy,
+                subject        : message.subject,
+                sentDate       : message.sentDate,
+                readDate       : message.readDate
+            });
+        });
+      });
+      */
       this.setState({
-        data: x,
+        //data: x,
         loading: false,
         refreshing: false
       });
-      //console.log('x');
-      console.log(x);
     });
     
   }
