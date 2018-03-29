@@ -38,7 +38,7 @@ const instructions = Platform.select({
 
 const schemas = [
   {
-    name: 'message', 
+    name: 'messages', 
     primaryKey: 'id',
     properties: {
       id             : 'string',
@@ -76,7 +76,7 @@ export default class App extends Component<Props> {
     }).then(realm => {
       console.log('realm loaded');
       this.setState({ realm });
-      this.setState({ data: realm.objects('message')});
+      this.setState({ data: realm.objects('messages')});
     });
   }
 
@@ -86,8 +86,13 @@ export default class App extends Component<Props> {
 
     login(username, password).then(messages => {
       Realm.open({schema: schemas}).then(realm => {
-      /*
+        //realm.deleteAll();
+        //let allMessages = realm.objects('message');realm.delete(allMessages);
+
         realm.write(() => {
+          //realm.deleteAll();
+          //console.log(realm.objects('messages'))
+
           for (message of messages) {
             id = md5(message.favorite      +
                      message.hasAttachment +
@@ -95,20 +100,24 @@ export default class App extends Component<Props> {
                      message.subject       + 
                      message.sentDate      + 
                      message.readDate)
-            if (!realm.objects('message'))
-              realm.create('message', {
-                  id             : id                   ,
-                  favorite       : message.favorite     ,
-                  hasAttachment  : message.hasAttachment,
-                  sentBy         : message.sentBy       ,
-                  subject        : message.subject      ,
-                  sentDate       : message.sentDate     ,
-                  readDate       : message.readDate     ,
+            if (realm.objects('messages').filtered('id = "'+id+'"').length==0) {
+              console.log('object did not previously exist, creating now');
+              console.log('object is ' + message.subject + ". Adding it...");
+              realm.create('messages', {
+                id             : id                   ,
+                favorite       : message.favorite     ,
+                hasAttachment  : message.hasAttachment,
+                sentBy         : message.sentBy       ,
+                subject        : message.subject      ,
+                sentDate       : message.sentDate     ,
+                readDate       : message.readDate     ,
               })
+            }
           }
+          
         })
       })
-      */
+      
       this.setState({
         //data: x,
         loading: false,
