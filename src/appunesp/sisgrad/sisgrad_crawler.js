@@ -1,13 +1,11 @@
 import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
-const cheerio = require("cheerio-without-node-native");
+const cheerio            = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
-//const Realm = require('realm');
-
-const sisgradDomain = `sistemas.unesp.br`;
-//sisgrad_domain = `google.com`;
-
-const build_url = (path) => `https://` + sisgradDomain + path;
+const sisgradDomain      = `sistemas.unesp.br`;
+const build_url          = (path) => `https://` + sisgradDomain + path;
+const md5                = require("blueimp-md5");
+const messagesTable      = 'messages' + 'v4';
 
 const paths = {
     login_form            : build_url('/sentinela'),                   //login form
@@ -66,6 +64,8 @@ export class SisgradCrawler {
                          redirect     = redirect)
         }
     }
+
+    messagesFromRealm = () => this.realm.objects(messagesTable);
 
     performLogin = async function() {
         console.log('loading login page...');
@@ -148,24 +148,29 @@ export class SisgradCrawler {
         if (/\/sentinela\/common.openMessage.action\?emailTipo=recebidas/.test(c.url)) {
             $ = c.$;
             cheerioTableparser($);
-            table = $('#destinatario').parsetable(false, false, true);
+            console.log($);
+            table = $('#destinatario').parsetable(false, false, false);
             data = [];
             console.log(table);
             clean = string => string.replace(/[ \t]+$/g,'');//removes extra whitespace
             for (var i in table[0]) {
                 if (i != 0) {
+                    console.log('doing');
+                    console.log(table[4][i]);
+                    console.log($(table[3][i]).text());
                     doc = {
                         favorite       : clean($(table[0][i]).text()),
                         hasAttachment  : clean($(table[1][i]).text()),
                         sentBy         : clean($(table[2][i]).text()),
                         subject        : clean($(table[3][i]).text()),
-                        sentDate       : clean($(table[4][i]).text()),
-                        readDate       : clean($(table[5][i]).text()),
+                        sentDate       : clean(table[4][i])          ,
+                        readDate       : clean(table[5][i])          ,
                         sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
                     }
                     data.push(doc)
                 }
             }
+            //console.log('going to record the messages');
             data.map(this.recordMessage);
         }
         return data;

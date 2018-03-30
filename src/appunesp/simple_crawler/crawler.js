@@ -1,16 +1,16 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
 const cheerio = require("cheerio-without-node-native");
 //const cheerio = require("cheerio");
-
-  // fetch logger
-  global._fetch = fetch;
-  global.fetch = function (uri, options, ...args) {
-    return global._fetch(uri, options, ...args).then((response) => {
-      console.log('Fetch', { request: { uri, options, ...args }, response });
-      return response;
-    });
-  };
-
+    /*
+    // fetch logger
+    global._fetch = fetch;
+    global.fetch = function (uri, options, ...args) {
+        return global._fetch(uri, options, ...args).then((response) => {
+        console.log('Fetch', { request: { uri, options, ...args }, response });
+        return response;
+        });
+    };
+    */
 export async function crawl(url, 
                             postData     = false, 
                             contentType  = false, 
@@ -20,8 +20,9 @@ export async function crawl(url,
     headers = {};
     headers['Agent'] = userAgent ?  userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-    //headers['Accept-Encoding'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-    headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
+    //headers['Accept-Encoding'] = 'gzip, deflate, br';
+    //headers['Content-Type'] = 'application/json;charset=utf-8';
+    //headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
     //if (cookieStores) 
     //    for (cookieStore of cookieStores) 
     //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
@@ -58,7 +59,7 @@ export async function crawl(url,
             statusText : http.statusText,
             url        : http.url,
             useFinalURL: http.useFinalURL,
-            $          : cheerio.load(html)
+            $          : cheerio.load(html, { decodeEntities: false })
            };
 }
 
