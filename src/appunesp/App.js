@@ -19,8 +19,8 @@ const md5 = require("blueimp-md5");
 const Realm = require('realm');
 //GLOBAL.XMLHttpRequest = GLOBAL.originalXMLHttpRequest || GLOBAL.XMLHttpRequest;
 //const cheerioTableparser = require('cheerio-tableparser');
-
-const Sisgrad = new SisgradCrawler(username, password);
+const realm = new Realm();
+const Sisgrad = new SisgradCrawler(username, password, realm);
 const messagesTable = 'messages' + 'v4';
 
 /*
@@ -66,20 +66,18 @@ export default class App extends Component<Props> {
   }
 
   componentWillMount() {
-    Realm.open(schemas).then(realm => {
-      console.log('realm loaded');
-      this.setState({ realm });
-      this.setState({ data: realm.objects(messagesTable)});
-    });
+    this.setState({ data: realm.objects(messagesTable)});
   }
 
   componentDidMount() {
     console.log("componentDidMount")
-
     
     Sisgrad.performLogin().then(
       Sisgrad.readMessages().then(()=>
-        {Sisgrad.realmWriteMessages(); this.setState( { loading: false, refreshing: false } )}
+        { 
+          Sisgrad.realmWriteMessages(); 
+          this.setState( { loading: false, refreshing: false } )
+        }
       ).then(
         Sisgrad.updateMessages()
       )
