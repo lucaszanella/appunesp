@@ -48,26 +48,6 @@ const instructions = Platform.select({
     'Shake or press menu button for dev menu',
 });
 
-messagesSchema = {
-  name: messagesTable, 
-  primaryKey: 'id',
-  properties: {
-    id             : 'string',
-    favorite       : 'string',
-    hasAttachment  : 'string',
-    sentBy         : 'string',
-    subject        : 'string',
-    sentDate       : 'string',
-    readDate       : 'string',
-    sisgradId      : 'string',
-    message        : 'string',
-  }
-}
-
-const schemas = {
-  schema: [messagesSchema]
-}
-
 type Props = {};
 export default class App extends Component<Props> {
   constructor(props) {
@@ -96,34 +76,14 @@ export default class App extends Component<Props> {
   componentDidMount() {
     console.log("componentDidMount")
 
-	writeMsgs  = (realm, messages) => () => {
-		record = message => {
-			console.log('going to record')
-			console.log(message)
-			id = md5(message.sisgradId + message.subject)
-			doc =  {id             : id                   ,
-					favorite       : message.favorite     ,
-					hasAttachment  : message.hasAttachment,
-					sentBy         : message.sentBy       ,
-					subject        : message.subject      ,
-					sentDate       : message.sentDate     ,
-					readDate       : message.readDate     ,
-					sisgradId      : message.sisgradId    ,
-					message        : 'message example'    ,}
-			if (realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
-				realm.create(messagesTable, doc)
-		}
-		//Sisgrad.readMessages().then(messages => messages.map(record))
-		messages.map(record);
-		this.setState( { loading: false, refreshing: false } )
-	}
-    //realmWrite = realm => realm.write(writeMsgs(realm))
-	realmWriteMessages = messages => 
-		Realm.open(schemas).then(realm => 
-			realm.write(writeMsgs(realm, messages)
-		)
-	)
-    Sisgrad.performLogin().then(Sisgrad.readMessages().then(realmWriteMessages))
+    
+    Sisgrad.performLogin().then(
+      Sisgrad.readMessages().then(()=>
+        {Sisgrad.realmWriteMessages(); this.setState( { loading: false, refreshing: false } )}
+      ).then(
+        Sisgrad.updateMessages()
+      )
+    )
   }
 
   render() {

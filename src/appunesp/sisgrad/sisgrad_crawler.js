@@ -2,6 +2,7 @@ import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
 const cheerio = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
+const Realm = require('realm');
 
 const sisgradDomain = `sistemas.unesp.br`;
 //sisgrad_domain = `google.com`;
@@ -16,6 +17,27 @@ const paths = {
     read_message_action   : (id) => build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 
 }
+
+messagesSchema = {
+    name: messagesTable, 
+    primaryKey: 'id',
+    properties: {
+      id             : 'string',
+      favorite       : 'string',
+      hasAttachment  : 'string',
+      sentBy         : 'string',
+      subject        : 'string',
+      sentDate       : 'string',
+      readDate       : 'string',
+      sisgradId      : 'string',
+      message        : 'string',
+    }
+  }
+  
+  const schemas = {
+    schema: [messagesSchema]
+  }
+
 //No URL suggestion? Use the alternative
 decide = (url, alternative) => url = url ? url : alternative;
 
@@ -142,14 +164,59 @@ export class SisgradCrawler {
                         sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
                     }
                     data.push(doc)
-                    //console.log(doc)
                 }
             }
-            //console.log(data);
-            //console.log(table.html());
         }
         return data;
     }
+
+    updateMessages = async function() {
+        record  = (realm, message, id) => () => {
+            //console.log('going to record')
+            //console.log(message)
+            id = md5(message.sisgradId + message.subject)
+            doc =  {id             : id                   ,
+                    message        : ''                   ,}
+            //if (realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
+            realm.create(messagesTable, doc)
+            
+        }
+
+        scanEmpty = (realm) => {
+            emptyMessages = realm.objects(messagesTable).filtered('message = ""')
+            for (emptyMessage of emptyMessages) {
+                message = await this.readMessage(emptyMessage.sisgradId);
+                realm.write(record(realm, message, emptyMessage.id))
+            }
+        }
+
+        Realm.open(schemas).then(scanEmpty);
+    }
+
+    writeMsgs  = (realm, messages) => () => {
+        record = message => {
+          //console.log('going to record')
+          //console.log(message)
+          id = md5(message.sisgradId + message.subject)
+          doc =  {  id             : id                   ,
+                    favorite       : message.favorite     ,
+                    hasAttachment  : message.hasAttachment,
+                    sentBy         : message.sentBy       ,
+                    subject        : message.subject      ,
+                    sentDate       : message.sentDate     ,
+                    readDate       : message.readDate     ,
+                    sisgradId      : message.sisgradId    ,
+                    message        : ''                   ,}
+          if (realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
+            realm.create(messagesTable, doc)
+        }
+        messages.map(record);
+    }
+    //realmWrite = realm => realm.write(writeMsgs(realm))
+    realmWriteMessages = messages => 
+        Realm.open(schemas).then(realm => 
+            realm.write(writeMsgs(realm, messages))
+        )
 
     readMessage = async function(id) {
         c = await this.crawl(decide(undefined, paths.read_message_action(id)));
