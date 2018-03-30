@@ -5,7 +5,7 @@ const cheerioTableparser = require('cheerio-tableparser');
 const sisgradDomain      = `sistemas.unesp.br`;
 const build_url          = (path) => `https://` + sisgradDomain + path;
 const md5                = require("blueimp-md5");
-const messagesTable      = 'messages' + 'v4';
+const messagesTable      = 'messages' + 'v7';
 
 const paths = {
     login_form            : build_url('/sentinela'),                   //login form
@@ -15,7 +15,7 @@ const paths = {
     read_message_action   : (id) => build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 }
 
-messagesSchema = {
+const messagesSchema = {
     name: messagesTable, 
     primaryKey: 'id',
     properties: {
@@ -31,7 +31,7 @@ messagesSchema = {
     }
 }
   
-const schemas = {
+export const schemas = {
     schema: [messagesSchema]
 }
 
@@ -65,7 +65,13 @@ export class SisgradCrawler {
         }
     }
 
-    messagesFromRealm = () => this.realm.objects(messagesTable);
+    messagesFromRealm = () => {
+        try {  
+            return this.realm.objects(messagesTable);
+        } catch (error) {
+            return []
+        }
+    }
 
     performLogin = async function() {
         console.log('loading login page...');
@@ -102,8 +108,8 @@ export class SisgradCrawler {
               Cheerio non-node version`s serializeArray doesn't work. 
               Small tweak before I fix things:
             */
-            login = [ { name: 'txt_usuario', value: '' },
-                     { name: 'txt_senha', value: '' } ]
+            login = [{ name: 'txt_usuario', value: '' },
+                     { name: 'txt_senha'  , value: '' } ]
             
             serialized = "";
           
@@ -148,16 +154,11 @@ export class SisgradCrawler {
         if (/\/sentinela\/common.openMessage.action\?emailTipo=recebidas/.test(c.url)) {
             $ = c.$;
             cheerioTableparser($);
-            console.log($);
             table = $('#destinatario').parsetable(false, false, false);
             data = [];
-            console.log(table);
             clean = string => string.replace(/[ \t]+$/g,'');//removes extra whitespace
             for (var i in table[0]) {
                 if (i != 0) {
-                    console.log('doing');
-                    console.log(table[4][i]);
-                    console.log($(table[3][i]).text());
                     doc = {
                         favorite       : clean($(table[0][i]).text()),
                         hasAttachment  : clean($(table[1][i]).text()),
@@ -170,7 +171,8 @@ export class SisgradCrawler {
                     data.push(doc)
                 }
             }
-            //console.log('going to record the messages');
+            console.log(data);
+            console.log('going to record the messages');
             data.map(this.recordMessage);
         }
         return data;
@@ -214,6 +216,8 @@ export class SisgradCrawler {
                 readDate       : message.readDate     ,
                 sisgradId      : message.sisgradId    ,
                 message        : ''                   ,}
+        console.log('should record message ' + message.subject);
+        console.log(this.realm.objects(messagesTable).filtered('id = "' + id + '"'));
         if (this.realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
             this.realm.write(() => this.realm.create(messagesTable, doc))
     }

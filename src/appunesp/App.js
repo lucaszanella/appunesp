@@ -1,7 +1,7 @@
-import React, { Component          } from 'react';
-import { List, ListItem, SearchBar } from "react-native-elements";
-import { SisgradCrawler            } from './sisgrad/sisgrad_crawler.js';
-import { username, password        } from './credentials.js';
+import React, { Component                          } from 'react';
+import { List, ListItem, SearchBar                 } from "react-native-elements";
+import { SisgradCrawler, schemas as SisgradSchemas } from './sisgrad/sisgrad_crawler.js';
+import { username, password                        } from './credentials.js';
 import {
     Platform,
     StyleSheet,
@@ -10,9 +10,8 @@ import {
     FlatList,
 } from 'react-native';
 const Realm         = require('realm');
-const realm         = new Realm();
+const realm         = new Realm(SisgradSchemas);
 const Sisgrad       = new SisgradCrawler(username, password, realm);
-//const messagesTable = 'messages' + 'v4';
 
 type Props = {};
 export default class App extends Component<Props> {
