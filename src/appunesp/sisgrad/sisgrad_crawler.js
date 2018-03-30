@@ -215,7 +215,7 @@ export class SisgradCrawler {
                 sisgradId      : message.sisgradId    ,
                 message        : ''                   ,}
         if (this.realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
-            this.realm.create(messagesTable, doc)
+            this.realm.write(() => this.realm.create(messagesTable, doc))
     }
 
     updateMessages = async function() {
