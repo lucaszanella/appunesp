@@ -59,18 +59,90 @@
 <script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_form.js"></script>
 <script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_menuflutuante.js"></script>
 <script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_onload.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_navegador.js"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <meta name="header" content="Privilégios Insuficientes" />
+    <meta name="header" content="Visualizar todas mensagens"/>
     
     <script language="JavaScript" type="text/javascript">
-        <!--
-
-        //-->
+        function submitVisualizarMensagem(id) {            
+           document.form_mensagens.action = '/sentinela/common.viewMessage.action?txt_id='+id+'&emailTipo=recebidas';
+           document.form_mensagens.submit();           
+        }
+        function msgMouseOver(e,read) {
+            if (e.className == 'mailmsg') e.className = 'mailmsgover';
+            else e.className = 'mailmsgover mailmsgbold';
+        }
+        function msgMouseOut(e) {
+          if (e.className == 'mailmsgover') e.className = 'mailmsg';
+            else e.className = 'mailmsg mailmsgbold';
+        }
+        function documentOnLoad() {
+            validateFORM_MENSAGENS = new ValidationForm('form_mensagens');
+            validateFORM_MENSAGENS.init();           
+        }
     </script>
         
+            <script type="text/javascript">          
+                var sessionTimeOut = 1800;
+                var sessionTimePassed;
+                var sessionCounterId;
+                
+                $(document).ready(function() {
+					verifySessionTimedOut();
+                });
+                
+                $(document).ajaxSuccess(function(event, XMLHttpRequest, ajaxOptions) {
+                    if (sessionTimePassed < sessionTimeOut &&
+                        ajaxOptions.url.indexOf('/sentinela') == 0) {
+                        sessionTimePassed = 0;
+                    }
+                });
+                
+                function verifySessionTimedOut() {
+                	sessionTimePassed = 0;
+                	
+                    sessionCounterId = setInterval(function() {
+                        sessionTimePassed += 1;
+                        remaining = sessionTimeOut - sessionTimePassed;
+                        
+                        if (remaining == 59) {
+        	        		$( "#dialog-expire" ).dialog({
+        	        			closeOnEscape: false,
+        	        			open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();},        	        			
+        	        			modal: true,
+        	        			buttons: {
+        	        				"Ainda estou aqui": function () {
+        	        					$("#dialog-expire").dialog('close');
+        	        					if(remaining > 0) {
+	        	        					$.post("principal.jsp").always(function(){});
+	        	        					clearInterval(sessionCounterId);
+	        	        					verifySessionTimedOut();
+        	        					}
+        	        				}
+        	        			}
+        	        		});                        	
+                        }
+                        
+                        if (remaining == 0) {
+                            clearInterval(sessionCounterId);
+                            $("#time").text("Sessão expirada!");
+                            return;
+                        }
+                        
+                        min = "" + Math.floor(remaining / 60);
+                        sec = "" + (remaining % 60);
+                        if (min.length == 1)
+                            min = "0" + min;
+                        if (sec.length == 1)
+                            sec = "0" + sec;
+                        text = min + ":" + sec;
+                        $("#time").text(text);
+                    }, 1000);
+                }
+            </script>
+        
     </head>
-    <body>
+    <body onload="documentOnLoad()">
     	<div id="dialog-expire" title="Revalidar sessão?" style="display:none;">
 			<p>
 				<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
@@ -106,14 +178,18 @@
     
 
 
+<li><a href="/sentinela/sentinela.showDesktop.action" title="Listar módulos disponiveis">Módulos</a></li>
+<li class="menu-esq-comfilho"><a href="#" title="Mensagens" class="comfilho">Mensagens</a>
+  <ul>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=recebidas" title="Recebidas">Recebidas</a></li>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=enviadas" title="Enviadas">Enviadas</a></li>                    
+  </ul>
+</li>
+<li><a href="/sentinela/user.openChangePassword.action" title="Alterar Senha">Alterar Senha</a></li>
+<li><a href="/sentinela/user.openChangeEmail.action" title="Alterar E-mail de Login">Alterar E-mail</a></li>
 
+<li><a href="/sentinela/common.logout.action" title="Sair">Sair</a></li>
 
-<li><a href="/sentinela/login.open.action" title="Login">Login</a></li>
-<li><a href="/sentinela/user.openRecoveryPassword.action" title="Login">Recuperar Senha</a></li>
-<li><a href="/sentinela/faq.jsp" title="D&uacute;vidas Freq&uuml;entes">F.A.Q.</a></li>
-
-
-<li><a href="http://www.unesp.br" title="Site Institucional" target="_blank">Institucional</a></li>
 
 
         
@@ -137,10 +213,10 @@ CarregaMenu('menuesq');
                     <span id="time"></span>
                     <a href="javascript:window.print()"><img src="/sentinela/skinunesp/imgs/icn_print.gif" alt="Imprimir" />Imprimir</a>
                     <a href="javascript:redimensionar_toggle()"><img id="toolbar_maximizar" alt="Maximizar" src="/sentinela/skinunesp/imgs/window_fullscreen.png"/><img id="toolbar_restaurar" alt="Restaurar" src="/sentinela/skinunesp/imgs/window_nofullscreen.png"/></a><hr style="clear:both;display:none;" /></div>
-                <h2>Privilégios Insuficientes</h2>
+                <h2>Mensagens recebidas</h2>
             </div>
             <div id="cc">
-                <div class="infomsg">Privilégios Insuficientes</div>
+                <div class="infomsg">Visualizar todas mensagens</div>
 
 
 
@@ -155,26 +231,548 @@ CarregaMenu('menuesq');
                 <!-- Exibe erros caso existam -->
                 
 
-                <table class="msgbox">
-        <tr>
-            <th>
-                Privilégios Insuficientes
-            </th>
-        </tr>
-        <tr>
-            <td class="centralizado">
-                Você foi desconectado ou não tem privilégios suficientes para completar a operação
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td class="centralizado">
-                
-            </td>
-        </tr>
-    </table>
+                <center>
+  <form name="form_mensagens" id="form_mensagens" method="post" action="">
+      
+          <div class="listagemTopo"><span class="listagemTopoMsg">599 registros</span><span class="listagemTopoLinks"><img src="/sentinela/skinunesp/imgs/icn_mvfirst.gif" alt="Primeira p&aacute;gina" border="0" class="off" /><img src="/sentinela/skinunesp/imgs/icn_mvprev.gif" alt="P&aacute;gina anterior" border="0" class="off" /> <b>1</b>, <a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=2" title="Ir para p&aacute;gina 2">2</a>, <a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=3" title="Ir para p&aacute;gina 3">3</a>, <a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=4" title="Ir para p&aacute;gina 4">4</a>, <a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=5" title="Ir para p&aacute;gina 5">5</a> <a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=2" title="Pr&oacute;xima p&aacute;gina"><img src="/sentinela/skinunesp/imgs/icn_mvnext.gif" alt="Pr&oacute;xima p&aacute;gina" border="0" /></a><a href="/sentinela/common.openMessage.action?emailTipo=recebidas&amp;d-4827107-p=30" title="&Uacute;ltima p&aacute;gina"><img src="/sentinela/skinunesp/imgs/icn_mvlast.gif" alt="&Uacute;ltima p&aacute;gina" border="0" /></a></span></div>
+<table id="destinatario" class="listagem">
+<thead>
+<tr>
+<th>&nbsp;&nbsp;&nbsp;</th>
+<th>&nbsp;&nbsp;&nbsp;</th>
+<th>Enviado por</th>
+<th>Assunto</th>
+<th class="centralizado">Enviado em </th>
+<th class="centralizado">Lido em </th></tr></thead>
+<tbody>
+<tr class="odd">
+<td class="centralizado">  
+                                 
+              </td>
+<td class="centralizado">  
+                 
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29794169');">
+                    
+                    
+                      Renovação de Matrícula para o ano letivo de 2018 - Informações Gerais
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 04/01/2018 16:52
+              </td>
+<td class="centralizado">                   
+                 29/03/2018 21:02
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                 
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29767047');">
+                    
+                      <b>Alunos Irregulares no ENADE 2017 - Solicitação de Dispensa</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 22/12/2017 15:01
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29699934');">
+                    
+                      <b>Horário das disciplinas para o ano letivo de 2018</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 15/12/2017 15:34
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29690386');">
+                    
+                      <b>Comunicado Vestibular Unesp - 2ª fase</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 15/12/2017 10:05
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Rosana Angélica Gonçalves Pesce                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29649116');">
+                    
+                      <b>Gates Cambridge Scholarship</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 12/12/2017 15:03
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Rosana Angélica Gonçalves Pesce                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29464560');">
+                    
+                      <b>Prorrogação Inscrição Edital IAESTE</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 30/11/2017 17:29
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29358195');">
+                    
+                      <b>ENADE 2017 - Mensagem da PROGRAD</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 24/11/2017 11:51
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29350643');">
+                    
+                      <b>ENADE 2017 - Prova no próximo domingo - 26/11/2017</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 24/11/2017 09:43
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29317769');">
+                    
+                    
+                      Mensagem aos alunos inscritos no ENADE 2017 - Concluintes
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 22/11/2017 15:52
+              </td>
+<td class="centralizado">                   
+                 22/11/2017 16:46
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                 
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29290919');">
+                    
+                      <b>Palestras de conscientização sobre prevenção do Suicídio</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 21/11/2017 10:24
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29248788');">
+                    
+                      <b>Palestras de conscientização sobre prevenção do Suicídio</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 17/11/2017 17:23
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Geraldo Forti Pereira da Silva                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29219149');">
+                    
+                      <b>Calendário Escolar - Ano Letivo 2018</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 16/11/2017 11:32
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29139672');">
+                    
+                      <b>Comunicado - 1a. Fase do Vestibular da UNESP</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 10/11/2017 16:44
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29137841');">
+                    
+                      <b>Avaliação de Disciplinas do 1º semestre de 2017</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 10/11/2017 16:34
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                 
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29095639');">
+                    
+                      <b>Edital de Iniciação Científica Sem Bolsa - ICSB/UNESP</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 09/11/2017 09:51
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Raquel Cristina Ferreira Bueno                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29066554');">
+                    
+                      <b>Importante - Informações ENADE 2017</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 08/11/2017 09:37
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Diogo Martins Furquim                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29061637');">
+                    
+                      <b>CONVITE - Palestra Educando para a Diversidade</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 07/11/2017 19:17
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Renata Zotin Gomes de Oliveira                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29059406');">
+                    
+                      <b>ENADE 2017</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 07/11/2017 17:49
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr>
+<tr class="odd">
+<td class="centralizado">  
+                                 
+              </td>
+<td class="centralizado">  
+                 
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                                 
+              </td>
+<td>
+                 Renata Zotin Gomes de Oliveira                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('29037381');">
+                    
+                    
+                      cronograma de aulas (válido)
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 06/11/2017 17:17
+              </td>
+<td class="centralizado">                   
+                 06/11/2017 17:18
+              </td></tr>
+<tr class="even">
+<td class="centralizado">  
+                 
+                    <img border="0" src="/sentinela/skinunesp/imgs/star.png" alt="" />
+                                 
+              </td>
+<td class="centralizado">  
+                                 
+              </td>
+<td>
+                 Renata Zotin Gomes de Oliveira                        
+              </td>
+<td style="cursor: pointer;">
+                 <a href="javascript:submitVisualizarMensagem('28976868');">
+                    
+                      <b>horarios da disciplina</b>
+                    
+                    
+                 </a>
+              </td>
+<td class="centralizado">
+                 31/10/2017 15:16
+              </td>
+<td class="centralizado">                   
+                 
+              </td></tr></tbody></table>
+      
+      
+  </form>
+  </center>
             </div>
         </div>
 
@@ -187,10 +785,10 @@ Portal de Sistemas
 </div>
 <div class="m">
 <ul>
-            <li><a href="https://sistemas.unesp.br/sentinela/" class="pri" title="Home">Inicio</a></li>
+            <li><a href="/sentinela/common.home.action" class="pri" title="Home">Inicio</a></li>
             <li><a href='http://www.unesp.br' target="_blank" title="Institucional">Institucional</a></li>
             
-                <li><a href="https://sistemas.unesp.br/sentinela/" title="Login" class="ult">Login</a></li>
+                <li><a href="/sentinela/common.logout.action" class="ult" title="Portal">Sair</a></li>
             
         
 </ul>

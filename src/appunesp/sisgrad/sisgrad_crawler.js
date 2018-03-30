@@ -130,17 +130,16 @@ export class SisgradCrawler {
             data = [];
             console.log(table);
             clean = string => string.replace(/[ \t]+$/g,'');//removes extra whitespace
-            //clean = string => cheerio.load(string).text()
             for (var i in table[0]) {
                 if (i != 0) {
                     doc = {
-                        favorite       : clean(table[0][i]),
-                        hasAttachment  : clean(table[1][i]),
-                        sentBy         : clean(table[2][i]),
-                        subject        : clean(table[3][i]),
-                        sentDate       : clean(table[4][i]),
-                        readDate       : clean(table[5][i]),
-                        sisgradId      : ''                ,
+                        favorite       : clean($(table[0][i]).text()),
+                        hasAttachment  : clean($(table[1][i]).text()),
+                        sentBy         : clean($(table[2][i]).text()),
+                        subject        : clean($(table[3][i]).text()),
+                        sentDate       : clean($(table[4][i]).text()),
+                        readDate       : clean($(table[5][i]).text()),
+                        sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
                     }
                     data.push(doc)
                     //console.log(doc)

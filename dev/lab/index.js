@@ -9,7 +9,10 @@ fs.readFile('./messages.html', function (err, data) {
   //console.log(data.toString());
   $ = cheerio.load(data.toString());
   cheerioTableparser($);
-  table = $('#destinatario').parsetable(false, false, true);
-  console.log(table[1][1])  
+  table = $('#destinatario').parsetable(false, false, false);
+ // x = $('a', table[3][2]).attr('href');
+  //c = /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][2]).attr('href'))[1]
+  console.log($(table[3][2]).text())
+  //console.log($('', table[3][2]))  
 
 });
