@@ -1,7 +1,7 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
 const cheerio = require("cheerio-without-node-native");
 //const cheerio = require("cheerio");
-    /*
+    
     // fetch logger
     global._fetch = fetch;
     global.fetch = function (uri, options, ...args) {
@@ -10,7 +10,7 @@ const cheerio = require("cheerio-without-node-native");
         return response;
         });
     };
-    */
+    
 export async function crawl(url, 
                             postData     = false, 
                             contentType  = false, 
@@ -22,7 +22,7 @@ export async function crawl(url,
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
     //headers['Accept-Encoding'] = 'gzip, deflate, br';
     //headers['Content-Type'] = 'application/json;charset=utf-8';
-    //headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
+    headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
     //if (cookieStores) 
     //    for (cookieStore of cookieStores) 
     //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
@@ -50,7 +50,7 @@ export async function crawl(url,
     const http   = await response;
     const header = http.headers;
     const html   = await http.text();
-
+    console.log({'html': html})
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
             header     : header, 

@@ -91,8 +91,7 @@ export class SisgradCrawler {
             c = await this.crawl(decide(undefined, paths.login_action));
             $ = c.$;
             forms = $('form');
-            console.log('forms')
-            console.log(forms)
+
             var login_form = null;
           
             if (forms.lenght == 0)
@@ -131,6 +130,7 @@ export class SisgradCrawler {
             console.log('encoded uri: ' + post + '. Sending login NOW:');
             c = await this.crawl(decide(undefined, paths.login_action), postData = post);
             console.log('url now: ' + c.url);
+            //console.log(c.$.html())
             //console.log(c.$.text());
         }
         if (/\/sentinela\/sentinela.showDesktop.action/.test(c.url)) {
