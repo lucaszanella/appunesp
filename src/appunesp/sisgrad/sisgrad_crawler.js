@@ -1,11 +1,12 @@
 import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
+import realm, {messagesTable} from '../realm';
 const cheerio            = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
 const sisgradDomain      = `sistemas.unesp.br`;
 const build_url          = (path) => `https://` + sisgradDomain + path;
 const md5                = require("blueimp-md5");
-const messagesTable      = 'messages' + 'v7';
+
 
 const paths = {
     login_form            : build_url('/sentinela'),                   //login form
@@ -15,37 +16,17 @@ const paths = {
     read_message_action   : (id) => build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 }
 
-const messagesSchema = {
-    name: messagesTable, 
-    primaryKey: 'id',
-    properties: {
-        id             : 'string',
-        favorite       : 'string',
-        hasAttachment  : 'string',
-        sentBy         : 'string',
-        subject        : 'string',
-        sentDate       : 'string',
-        readDate       : 'string',
-        sisgradId      : 'string',
-        message        : 'string',
-    }
-}
-  
-export const schemas = {
-    schema: [messagesSchema]
-}
-
 //No URL suggestion? Use the alternative
 decide = (url, alternative) => url = url ? url : alternative;
+clean = string => string.replace(/[ \t\n]+/g,' ').trim();//removes extra whitespace
 
 export class SisgradCrawler {
     //cookieStores = [new CookieStore(sisgradDomain)];
 
-    constructor(username, password, realm, userAgent=false) {
+    constructor(username, password, userAgent=false) {
         this.userAgent = userAgent;
         this.username  = username;
         this.password  = password;
-        this.realm     = realm;
 
         this.crawl = (path,
                       postData      = false,
@@ -67,9 +48,9 @@ export class SisgradCrawler {
 
     messagesFromRealm = () => {
         try {  
-            return this.realm.objects(messagesTable);
+            return realm.objects(messagesTable);
         } catch (error) {
-            return []
+            return [];
         }
     }
 
@@ -156,13 +137,15 @@ export class SisgradCrawler {
             cheerioTableparser($);
             table = $('#destinatario').parsetable(false, false, false);
             data = [];
-            clean = string => string.replace(/[ \t]+$/g,'');//removes extra whitespace
+            //console.log('ué');
+            //console.log(table[2][3]);
+            //console.log($(table[2][3]).text())
             for (var i in table[0]) {
                 if (i != 0) {
                     doc = {
                         favorite       : clean($(table[0][i]).text()),
                         hasAttachment  : clean($(table[1][i]).text()),
-                        sentBy         : clean($(table[2][i]).text()),
+                        sentBy         : clean(table[2][i]),
                         subject        : clean($(table[3][i]).text()),
                         sentDate       : clean(table[4][i])          ,
                         readDate       : clean(table[5][i])          ,
@@ -185,28 +168,13 @@ export class SisgradCrawler {
             $ = c.$;
             cheerioTableparser($);
             table = $('#destinatario').parsetable(false, false, false);
-            data = [];
-            clean = (string) => string.replace(/[ \t]+$/g,'');//removes extra whitespace
-            for (var i in table[0]) {
-                if (i != 0) {
-                    data.push(
-                        {
-                            favorite       : clean(table[0][i]),
-                            hasAttachment  : clean(table[1][i]),
-                            sentBy         : clean(table[2][i]),
-                            subject        : clean(table[3][i]),
-                            sentDate       : clean(table[4][i]),
-                            readDate       : clean(table[5][i]),
-                        }
-                    )
-                }
-            }
+            
         }
         return data;
     }
  
     recordMessage = message => {
-        id = md5(message.sisgradId + message.subject);
+        id = md5(message.sisgradId);
         doc =  {id             : id                   ,
                 favorite       : message.favorite     ,
                 hasAttachment  : message.hasAttachment,
@@ -216,10 +184,11 @@ export class SisgradCrawler {
                 readDate       : message.readDate     ,
                 sisgradId      : message.sisgradId    ,
                 message        : ''                   ,}
-        console.log('should record message ' + message.subject);
-        console.log(this.realm.objects(messagesTable).filtered('id = "' + id + '"'));
-        if (this.realm.objects(messagesTable).filtered('id = "' + id + '"').length==0)
-            this.realm.write(() => this.realm.create(messagesTable, doc))
+        if (realm.objects(messagesTable).filtered('id = "' + id + '"').length==0){
+            realm.write(() => realm.create(messagesTable, doc))
+            console.log('recording message ' + message + "at " + messagesTable);
+            console.log(message);
+        }
     }
 
     updateMessages = async function() {
@@ -229,13 +198,13 @@ export class SisgradCrawler {
                         id             : id,
                         message        : '',
                     }
-            this.realm.create(messagesTable, doc)            
+            realm.create(messagesTable, doc)            
         }
 
-        emptyMessages = this.realm.objects(messagesTable).filtered('message = ""')
+        emptyMessages = realm.objects(messagesTable).filtered('message = ""')
         for (emptyMessage of emptyMessages) {
             message = await this.readMessage(emptyMessage.sisgradId);
-            this.realm.write(record(message, emptyMessage.id))
+            realm.write(record(message, emptyMessage.id))
         }
     }
 }

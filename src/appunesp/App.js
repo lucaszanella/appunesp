@@ -9,9 +9,9 @@ import {
     View,
     FlatList,
 } from 'react-native';
-const Realm         = require('realm');
-const realm         = new Realm(SisgradSchemas);
-const Sisgrad       = new SisgradCrawler(username, password, realm);
+//const Realm         = require('realm');
+//const realm         = new Realm(SisgradSchemas);
+const Sisgrad       = new SisgradCrawler(username, password);
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -20,7 +20,7 @@ export default class App extends Component<Props> {
 
         this.state = {
             loading: false,
-            data: [],
+            data: Sisgrad.messagesFromRealm(),
             page: 1,
             seed: 1,
             error: null,
@@ -31,11 +31,11 @@ export default class App extends Component<Props> {
     }
 
     componentWillMount() {
-        this.setState(
-            { 
-                data: Sisgrad.messagesFromRealm() 
-            }
-        )
+        //this.setState(
+        //    { 
+        //        data: Sisgrad.messagesFromRealm() 
+        //    }
+        //)
     }
 
     componentDidMount() {
