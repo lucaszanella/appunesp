@@ -45,14 +45,14 @@ export class SisgradCrawler {
     //Used some messy hacks to deal with named arguments and avoid repetition of this huge parameters list
     redoLoginIfNecessary = async function(path = undefined,
                                           options) { //If for some reason we got unlogged
-        response = () => crawl(path = path, 
+        response = () => crawl(path, 
                                {
-                               postData     = options.postData, 
-                               contentType  = options.contentType, 
-                               userAgent    = options.userAgent ? options.userAgent : this.userAgent,
-                               redirect     = options.redirect,
-                               expectUrl    = options.expectUrl,
-                               expectThrow  = options.expectThrow
+                               postData     : options.postData, 
+                               contentType  : options.contentType, 
+                               userAgent    : options.userAgent ? options.userAgent : this.userAgent,
+                               redirect     : options.redirect,
+                               expectUrl    : options.expectUrl,
+                               expectThrow  : options.expectThrow
                                })
         r = await response();
 
@@ -77,25 +77,28 @@ export class SisgradCrawler {
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
 
-        r = await this.crawl(path          = paths.login_form.url,
+        r = await this.crawl(paths.login_form.url,
                             {
-                             expectUrl     = paths.login_form.path,
-                             redirectLogin = false
+                             expectUrl     : paths.login_form.path,
+                             redirectLogin : false
                             });
-
-        r = await this.crawl(path          = paths.login_form_redirected.url,
+        console.log(r.url)
+        r = await this.crawl(paths.login_form_redirected.url,
                             { 
-                             expectUrl     = paths.login_form_redirected.path,
-                             redirectLogin = false
+                             expectUrl     : paths.login_form_redirected.path,
+                             redirectLogin : false
                             }); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
+        console.log(r.url)
 
-        console.log('doing login to ' + paths.login_action.url + '...');
+        console.log('doing login ...');
 
-        r = await this.crawl(path          = paths.login_action.url,
+        r = await this.crawl(paths.login_action.url,
                             { 
-                             expectUrl     = paths.login_action.path,
-                             redirectLogin = false
+                             expectUrl     : paths.login_action.path,
+                             redirectLogin : false
                             });
+        console.log(r.url)
+
         $ = r.$;
         forms = $('form');
 
@@ -134,11 +137,13 @@ export class SisgradCrawler {
 
         post = encodeURI(serialized);
 
-        r = await this.crawl(path = paths.login_action.url,
+        console.log('sending login info NOW')
+
+        r = await this.crawl(paths.login_action.url,
                             { 
-                             postData      = post, 
-                             expectUrl     = paths.login_form_redirected.path,
-                             redirectLogin = false
+                             postData      : post, 
+                             expectUrl     : paths.login_form_redirected.path,
+                             redirectLogin : false
                             });
         return true;
 
@@ -147,8 +152,8 @@ export class SisgradCrawler {
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        r = await this.crawl(path = paths.read_messages_action(page).url,
-                            {expectUrl = paths.read_messages_action(page).path});
+        r = await this.crawl(paths.read_messages_action(page).url,
+                            {expectUrl : paths.read_messages_action(page).path});
         
         $ = r.$;
         table = $('#destinatario').parsetable(false, false, false);
@@ -175,8 +180,8 @@ export class SisgradCrawler {
     }
 
     readMessage = async function(id) {
-        r = await this.crawl(path = paths.read_message_action(id),
-                            {expectUrl = paths.read_message_action(id).path});
+        r = await this.crawl(paths.read_message_action(id),
+                            {expectUrl : paths.read_message_action(id).path});
         
         form  = r.$('form[name=form_email]');
         table = $('table', form).first().parsetable(false, false, false);

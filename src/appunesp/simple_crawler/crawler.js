@@ -32,7 +32,7 @@ export async function crawl(path = undefined,
         path,
         {
             body          : options.postData ? options.postData : undefined, // must match 'Content-Type' header
-            headers       : options.headers,
+            headers       : headers,
             method        : options.postData ? 'POST' : 'GET', // *GET, POST, PUT, DELETE, etc.
             //redirect      : true,//redirect ? 'follow' : 'manual', // *manual, follow, error. TODO: is manual the right keyword?
             referrer      : 'no-referrer', // *client, no-referrer,
