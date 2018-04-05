@@ -43,24 +43,20 @@ export class SisgradCrawler {
     }
 
     //Used some messy hacks to deal with named arguments and avoid repetition of this huge parameters list
-    redoLoginIfNecessary = async function(path         = undefined, 
-                                          postData     = false    , 
-                                          contentType  = false    , 
-                                          userAgent    = false    ,
-                                          redirect     = true     ,
-                                          expectUrl    = undefined,
-                                          expectThrow  = true     ,
-                                          redirectLogin= true) { //If for some reason we got unlogged
-        response = () => crawl(path         = path, 
-                               postData     = postData, 
-                               contentType  = contentType, 
-                               userAgent    = userAgent ? userAgent : this.userAgent,
-                               redirect     = redirect,
-                               expectUrl    = expectUrl,
-                               expectThrow  = expectThrow)
+    redoLoginIfNecessary = async function(path = undefined,
+                                          options) { //If for some reason we got unlogged
+        response = () => crawl(path = path, 
+                               {
+                               postData     = options.postData, 
+                               contentType  = options.contentType, 
+                               userAgent    = options.userAgent ? options.userAgent : this.userAgent,
+                               redirect     = options.redirect,
+                               expectUrl    = options.expectUrl,
+                               expectThrow  = options.expectThrow
+                               })
         r = await response();
 
-        if (redirectLogin && pathIsFromUrl(paths.login_form.path, r.url)) {
+        if (options.redirectLogin && pathIsFromUrl(paths.login_form.path, r.url)) {
             console.log('hmmm, logged out, doing login again');
             this.performLogin();
             r = await response();
@@ -81,24 +77,30 @@ export class SisgradCrawler {
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
 
-        r = await this.crawl(path          = paths.login_form.url, 
+        r = await this.crawl(path          = paths.login_form.url,
+                            {
                              expectUrl     = paths.login_form.path,
-                             redirectLogin = false);
+                             redirectLogin = false
+                            });
 
-        r = await this.crawl(path          = paths.login_form_redirected.url, 
+        r = await this.crawl(path          = paths.login_form_redirected.url,
+                            { 
                              expectUrl     = paths.login_form_redirected.path,
-                             redirectLogin = false); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
+                             redirectLogin = false
+                            }); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
 
         console.log('doing login to ' + paths.login_action.url + '...');
-        
-        r = await this.crawl(path          = paths.login_action.url, 
+
+        r = await this.crawl(path          = paths.login_action.url,
+                            { 
                              expectUrl     = paths.login_action.path,
-                             redirectLogin = false);
+                             redirectLogin = false
+                            });
         $ = r.$;
         forms = $('form');
 
         var login_form = null;
-        
+
         if (forms.lenght == 0)
             console.log('no form found')
         else if (forms.length == 1)
@@ -132,10 +134,12 @@ export class SisgradCrawler {
 
         post = encodeURI(serialized);
 
-        r = await this.crawl(path          = paths.login_action.url, 
+        r = await this.crawl(path = paths.login_action.url,
+                            { 
                              postData      = post, 
                              expectUrl     = paths.login_form_redirected.path,
-                             redirectLogin = false);      
+                             redirectLogin = false
+                            });
         return true;
 
         //TODO: If r contains login success, return true. Otherwise return false
@@ -143,8 +147,8 @@ export class SisgradCrawler {
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        r = await this.crawl(path        = paths.read_messages_action(page).url, 
-                             expectUrl   = paths.read_messages_action(page).path);
+        r = await this.crawl(path = paths.read_messages_action(page).url,
+                            {expectUrl = paths.read_messages_action(page).path});
         
         $ = r.$;
         table = $('#destinatario').parsetable(false, false, false);
@@ -171,8 +175,8 @@ export class SisgradCrawler {
     }
 
     readMessage = async function(id) {
-        r = await this.crawl(path        = paths.read_message_action(id),
-                              expectUrl   = paths.read_message_action(id).path);
+        r = await this.crawl(path = paths.read_message_action(id),
+                            {expectUrl = paths.read_message_action(id).path});
         
         form  = r.$('form[name=form_email]');
         table = $('table', form).first().parsetable(false, false, false);

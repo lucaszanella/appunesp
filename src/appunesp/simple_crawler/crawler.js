@@ -16,20 +16,14 @@ global.fetch = function (uri, options, ...args) {
     });
 };
     
-export async function crawl(path         = undefined, 
-                            postData     = false    , 
-                            contentType  = false    , 
-                            userAgent    = false    ,
-                            cookieStores = false    ,
-                            redirect     = true     ,
-                            expectUrl    = undefined,
-                            expectThrow  = true) {
+export async function crawl(path = undefined, 
+                            options) {
     headers = {};
-    headers['Agent'] = userAgent ?  userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
+    headers['Agent'] = options.userAgent ? options.userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
     //headers['Accept-Encoding'] = 'gzip, deflate, br';
     //headers['Content-Type'] = 'application/json;charset=utf-8';
-    headers['Content-type'] = contentType ? contentType : 'application/x-www-form-urlencoded';
+    headers['Content-type'] = options.contentType ? options.contentType : 'application/x-www-form-urlencoded';
     //if (cookieStores) 
     //    for (cookieStore of cookieStores) 
     //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
@@ -37,19 +31,19 @@ export async function crawl(path         = undefined,
     const response = fetch(
         path,
         {
-            body          : postData ? postData : undefined, // must match 'Content-Type' header
-            headers       : headers,
-            method        : postData ? 'POST' : 'GET', // *GET, POST, PUT, DELETE, etc.
+            body          : options.postData ? options.postData : undefined, // must match 'Content-Type' header
+            headers       : options.headers,
+            method        : options.postData ? 'POST' : 'GET', // *GET, POST, PUT, DELETE, etc.
             //redirect      : true,//redirect ? 'follow' : 'manual', // *manual, follow, error. TODO: is manual the right keyword?
             referrer      : 'no-referrer', // *client, no-referrer,
             keepalive     : true,
             //credentials   : 'include',
             //mode          : 'cors'
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, same-origin, *omit
-            mode: 'cors', // no-cors, cors, *same-origin
-            redirect: 'follow', // *manual, follow, error
-            referrer: 'no-referrer', // *client, no-referrer
+            cache         : 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials   : 'same-origin', // include, same-origin, *omit
+            mode          : 'cors', // no-cors, cors, *same-origin
+            redirect      : 'follow', // *manual, follow, error
+            referrer      : 'no-referrer', // *client, no-referrer
         }
     );
 
@@ -59,8 +53,8 @@ export async function crawl(path         = undefined,
     const parsedHtml = cheerio.load(html, { decodeEntities: false });
     cheerioTableparser(parsedHtml); //Inclused table parser method in cheerio
     console.log({'html': html});
-    if (expectThrow && expectUrl)
-        pathIsFromUrl(expectUrl, http.url) ? console.log("THROW") : null
+    if (options.expectThrow && options.expectUrl)
+        pathIsFromUrl(options.expectUrl, http.url) ? console.log("THROW") : null
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
                 header     : header, 
@@ -70,7 +64,7 @@ export async function crawl(path         = undefined,
                 url        : http.url,
                 useFinalURL: http.useFinalURL,
                 $          : parsedHtml,
-                expect     : expectUrl ? pathIsFromUrl(expectUrl, http.url) : undefined,
+                expect     : options.expectUrl ? pathIsFromUrl(options.expectUrl, http.url) : undefined,
            };
 }
 
