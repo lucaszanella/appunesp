@@ -186,7 +186,7 @@ export class SisgradCrawler {
         }
     }
 
-    updateMessages = async function() {
+    updateMessage = async function() {
         record  = (message, id) => () => {
             id = md5(message.sisgradId); //Todo: unify id extractor
             doc =   {
@@ -199,7 +199,7 @@ export class SisgradCrawler {
         emptyMessages = realm.objects(messagesTable).filtered('message = ""');
         for (emptyMessage of emptyMessages) {
             message = await this.readMessage(emptyMessage.sisgradId);
-            realm.write(record(message, emptyMessage.id))
+            realm.write(record(message, emptyMessage.id));
         }
     }
 }
