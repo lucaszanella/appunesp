@@ -20,7 +20,7 @@ export default class App extends Component<Props> {
 
         this.state = {
             loading: false,
-            data: Sisgrad.messagesFromRealm(),
+            data: [],
             page: 1,
             seed: 1,
             error: null,
@@ -31,11 +31,11 @@ export default class App extends Component<Props> {
     }
 
     componentWillMount() {
-        //this.setState(
-        //    { 
-        //        data: Sisgrad.messagesFromRealm() 
-        //    }
-        //)
+        this.setState(
+            { 
+                data: Sisgrad.messagesFromRealm() 
+            }
+        )
     }
 
     componentDidMount() {
