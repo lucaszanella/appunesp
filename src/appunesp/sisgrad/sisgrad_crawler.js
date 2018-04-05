@@ -5,12 +5,13 @@ const cheerio            = require("cheerio-without-node-native");
 const sisgradDomain      = `sistemas.unesp.br`;
 const md5                = require("blueimp-md5");
 
+/*
 function escapeRegExp(str) {
     return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
-
+*/
 class build_url {
     constructor(path) {
         this.url  = `https://` + sisgradDomain + path;
@@ -38,31 +39,21 @@ export class SisgradCrawler {
         this.username  = username;
         this.password  = password;
 
-        this.crawl = (path,
-                      postData      = false,
-                      contentType   = false,                         
-                      userAgent     = false, 
-                      cookieStores  = false,
-                      redirect      = false) => {
-
-            return crawl(path,
-                         postData     = postData, 
-                         contentType  = contentType,                         
-                         userAgent    = this.userAgent, 
-                         cookieStores = cookieStores,
-                         redirect     = redirect)
+        this.crawl = (...args) => {
+            return crawl(userAgent = this.userAgent, args)
         }
 
         this._crawl = this.redoLoginIfNecessary;
     }
 
-    redoLoginIfNecessary = async function(url) { //If for some reason we got unlogged
-        response = await this.crawl(url);
+    redoLoginIfNecessary = async function(...args) { //If for some reason we got unlogged
+        response = await this.crawl(args, expectUrl = paths.login_form.path);
 
-        if (pathIsFromUrl(paths.login_form.path, response.url)) {
-            console.log('doing login again...'); console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
+        if (response.expect) {
+            console.log('doing login again...');
+            console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
             
-            response = await this.crawl(decide(undefined, paths.login_form_redirected.url));
+            response = await this.crawl(paths.login_form_redirected.url, args);
             return response;
         } else {
             return response;
@@ -79,97 +70,103 @@ export class SisgradCrawler {
                 
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
-        r = await this.crawl(paths.login_form.url);
 
-        if (pathIsFromUrl(paths.login_form.path, r.url)) {   //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
-            console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
-            r = await this.crawl(decide(undefined, paths.login_form_redirected.url));
-        }
+        r = await this.crawl(paths.login_form.url, 
+                             expectUrl = paths.login_form.path,
+                             expectThrow = true);
 
-        if (pathIsFromUrl(paths.login_form_redirected.path, r.url)) {//If we're in the login.open.action, we should find a form there so we fill this form an then send it
-            console.log('doing login to ' + paths.login_action.url + '...');
-            
-            r = await this.crawl(decide(undefined, paths.login_action.url));
-            $ = r.$;
-            forms = $('form');
+        r = await this.crawl(paths.login_form_redirected.url, 
+                             expectUrl = login_form_redirected,
+                             expectThrow = true); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
+        
+        console.log('doing login to ' + paths.login_action.url + '...');
+        
+        r = await this.crawl(paths.login_action.url, 
+                             expectUrl = paths.login_action.path,
+                             expectThrow = true);
+        $ = r.$;
+        forms = $('form');
 
-            var login_form = null;
-          
-            if (forms.lenght == 0)
-              console.log('no form found')
-            else if (forms.length == 1)
-              login_form = forms.first()
-            else if (t = $('form[name=formLogin]').lenght)
-              login_form = t
-            
-            login = login_form.serializeArray();
-            
-            /*
-              Cheerio non-node version`s serializeArray doesn't work. 
-              Small tweak before I fix things:
-            */
-            login = [{ name: 'txt_usuario', value: '' },
-                     { name: 'txt_senha'  , value: '' }]
-            
-            serialized = "";
-          
-            login.map(item => {
-              if (item.name=='txt_usuario')
-                item.value = this.username
-              if (item.name=='txt_senha')
-                item.value = this.password
-              return item;
-            }).   map(item => 
-              serialized += "&" + item.name + "=" + item.value
-            );
-          
-            serialized = serialized.substr(1, serialized.length); //removes first '&'
+        var login_form = null;
+        
+        if (forms.lenght == 0)
+            console.log('no form found')
+        else if (forms.length == 1)
+            login_form = forms.first()
+        else if (t = $('form[name=formLogin]').lenght)
+            login_form = t
+        
+        login = login_form.serializeArray();
+        
+        /*
+            Cheerio non-node version`s serializeArray doesn't work. 
+            Small tweak before I fix things:
+        */
+        login = [{ name: 'txt_usuario', value: '' },
+                    { name: 'txt_senha'  , value: '' }]
+        
+        serialized = "";
+        
+        login.map(item => {
+            if (item.name=='txt_usuario')
+            item.value = this.username
+            if (item.name=='txt_senha')
+            item.value = this.password
+            return item;
+        }).   map(item => 
+            serialized += "&" + item.name + "=" + item.value
+        );
+        
+        serialized = serialized.substr(1, serialized.length); //removes first '&'
 
-            post = encodeURI(serialized);
-            r = await this.crawl(decide(undefined, paths.login_action.url), postData = post);
-        }
-        if (pathIsFromUrl(paths.show_desktop_action.path, r.url)) {
-            return true;
-        }
-        //TODO: If c contains login success, return true. Otherwise return false
-        return false;
+        post = encodeURI(serialized);
+        r = await this.crawl(paths.login_action.url, 
+                             postData    = post, 
+                             expectUrl   = login_form_redirected.path,
+                             expectThrow = true);      
+        return true;
+                
+        //TODO: If r contains login success, return true. Otherwise return false
     }
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        r = await this._crawl(decide(undefined, paths.read_messages_action(page).url));
+        r = await this._crawl(paths.read_messages_action(page).url, 
+                              expectUrl   = paths.read_messages_action(page).path,
+                              expectThrow = true);
+        
+        $ = r.$;
+        table = $('#destinatario').parsetable(false, false, false);
+        data = [];
 
-        if (pathIsFromUrl(paths.read_messages_action(page).path, r.url)) {
-            $ = r.$;
-            table = $('#destinatario').parsetable(false, false, false);
-            data = [];
-
-            for (var i in table[0]) {
-                if (i != 0) {
-                    doc = {
-                        favorite       : clean($(table[0][i]).text()),
-                        hasAttachment  : clean($(table[1][i]).text()),
-                        sentBy         : clean(table[2][i])          ,
-                        subject        : clean($(table[3][i]).text()),
-                        sentDate       : clean(table[4][i])          ,
-                        readDate       : clean(table[5][i])          ,
-                        sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
-                    }
-                    data.push(doc)
+        for (var i in table[0]) {
+            if (i != 0) {
+                doc = {
+                    favorite       : clean($(table[0][i]).text()),
+                    hasAttachment  : clean($(table[1][i]).text()),
+                    sentBy         : clean(table[2][i])          ,
+                    subject        : clean($(table[3][i]).text()),
+                    sentDate       : clean(table[4][i])          ,
+                    readDate       : clean(table[5][i])          ,
+                    sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
                 }
+                data.push(doc)
             }
-            console.log(data);
-            data.map(this.recordMessage); //TODO: slow down recording, too many in async mode
         }
+        console.log(data);
+        data.map(this.recordMessage); //TODO: slow down recording, too many in async mode
+        
         return data;
     }
 
     readMessage = async function(id) {
-        r = await this._crawl(decide(undefined, paths.read_message_action(id)));
-        if (pathIsFromUrl(paths.read_message_action(id).path, r.url))
-            table = r.$('#destinatario').parsetable(false, false, false);   
+        r = await this._crawl(paths.read_message_action(id),
+                              expectUrl = paths.read_message_action(id).path,
+                              expectThrow = true);
+
+        table = r.$('#destinatario').parsetable(false, false, false);   
         
-        return data;
+        return;
     }
  
     recordMessage = async function (message) {

@@ -2,6 +2,13 @@ import { CookieStore, locateCookiesInHeader } from "./cookies";
 const cheerio = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
 
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
+
+
 //const cheerio = require("cheerio");
     
     // fetch logger
@@ -14,11 +21,13 @@ const cheerioTableparser = require('cheerio-tableparser');
     };
     
 export async function crawl(url, 
-                            postData     = false, 
-                            contentType  = false, 
-                            userAgent    = false,
-                            cookieStores = false,
-                            redirect     = true  ) {
+                            postData     = false    , 
+                            contentType  = false    , 
+                            userAgent    = false    ,
+                            cookieStores = false    ,
+                            redirect     = true     ,
+                            expectUrl    = undefined,
+                            expectThrow  = undefined) {
     headers = {};
     headers['Agent'] = userAgent ?  userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
@@ -29,7 +38,6 @@ export async function crawl(url,
     //    for (cookieStore of cookieStores) 
     //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
         
-    
     const response = fetch(
         url,
         {
@@ -63,7 +71,8 @@ export async function crawl(url,
                 statusText : http.statusText,
                 url        : http.url,
                 useFinalURL: http.useFinalURL,
-                $          : parsedHtml
+                $          : parsedHtml,
+                expect     : expect ? pathIsFromUrl(expect, http.url) : undefined,
            };
 }
 
