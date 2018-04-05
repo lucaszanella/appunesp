@@ -1,5 +1,5 @@
-import { CookieStore } from '../simple_crawler/cookies.js'
-import { crawl } from '../simple_crawler/crawler.js'
+import { CookieStore } from '../simple_crawler/cookies.js';
+import { crawl } from '../simple_crawler/crawler.js';
 import realm, {messagesTable} from '../realm';
 import escapeRegExp from 'utils/escaperegexp';
 const cheerio = require("cheerio-without-node-native");
@@ -19,7 +19,7 @@ const paths = {
     login_action          : new build_url('/sentinela/login.action'),      //actual login
     show_desktop_action   : new build_url('/sentinela/sentinela.showDesktop.action'),
     read_messages_action  : page => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
-    read_message_action   : id   => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
+    read_message_action   : id   => new build_url(`/sentinela/common.viewMessage.action?txt_id=${id}&emailTipo=recebidas`),
 }
 
 //decide = (url, alternative) => url = url ? url : alternative; //No URL suggestion? Use the alternative
@@ -65,18 +65,18 @@ export class SisgradCrawler {
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
 
-        r = await this.crawl(path = paths.login_form.url, 
-                             expectUrl = paths.login_form.path,
+        r = await this.crawl(path        = paths.login_form.url, 
+                             expectUrl   = paths.login_form.path,
                              expectThrow = true);
 
-        r = await this.crawl(path = paths.login_form_redirected.url, 
-                             expectUrl = login_form_redirected,
+        r = await this.crawl(path        = paths.login_form_redirected.url, 
+                             expectUrl   = login_form_redirected,
                              expectThrow = true); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
         
         console.log('doing login to ' + paths.login_action.url + '...');
         
-        r = await this.crawl(path = paths.login_action.url, 
-                             expectUrl = paths.login_action.path,
+        r = await this.crawl(path        = paths.login_action.url, 
+                             expectUrl   = paths.login_action.path,
                              expectThrow = true);
         $ = r.$;
         forms = $('form');
@@ -115,6 +115,7 @@ export class SisgradCrawler {
         serialized = serialized.substr(1, serialized.length); //removes first '&'
 
         post = encodeURI(serialized);
+
         r = await this.crawl(path        = paths.login_action.url, 
                              postData    = post, 
                              expectUrl   = login_form_redirected.path,
@@ -158,9 +159,10 @@ export class SisgradCrawler {
         r = await this._crawl(path        = paths.read_message_action(id),
                               expectUrl   = paths.read_message_action(id).path,
                               expectThrow = true);
-
-        table = r.$('#destinatario').parsetable(false, false, false);   
         
+        form  = r.$('form[name=form_email]');
+        table = $('table', form).first().parsetable(false, false, false);
+
         return;
     }
  
@@ -194,7 +196,7 @@ export class SisgradCrawler {
             realm.create(messagesTable, doc);          
         }
 
-        emptyMessages = realm.objects(messagesTable).filtered('message = ""')
+        emptyMessages = realm.objects(messagesTable).filtered('message = ""');
         for (emptyMessage of emptyMessages) {
             message = await this.readMessage(emptyMessage.sisgradId);
             realm.write(record(message, emptyMessage.id))

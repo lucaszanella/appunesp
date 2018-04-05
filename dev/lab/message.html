@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br" data-ng-app="null">
+    <head>
+        
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>:: UNESP : Portal de Sistemas ::</title>
+<link rel="shortcut icon" href="/sentinela/skinunesp/imgs/favicon.ico" />
+<link rel="icon" href="/sentinela/skinunesp/imgs/favicon.ico" />
+<meta name="description" content="null" />
+<meta name="keywords" content="Módulo, Autenticação, Sistemas, UNESP, Sentinela" />
+<meta name="robots" content="index" />
+<meta name="author" content="UNESP" />
+<meta name="language" content="pt-br" />
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="pragma" content="no-cache" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/unesppadrao_core_nowidth.css" type="text/css" />
+<link rel="stylesheet" media="print" href="/sentinela/skinunesp/css/unesppadrao_core_print.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/unesppadrao_sistemas.css" type="text/css" />
+<link rel="stylesheet" media="print" href="/sentinela/skinunesp/css/unesppadrao_sistemas_print.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.tooltip.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.tooltip.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.Jcrop.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery_ui/jquery-ui-1.8.4.custom.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/tipsy.css" type="text/css" />
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.xmldom.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.Jcrop.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.columnize.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.webcam.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.delegate.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.form.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.currency.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.highlight.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tipsy.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tooltip.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.field.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery-ui.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.cookie.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.ajaxmanager.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.fileupload.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tablednd.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_form.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_menuflutuante.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_onload.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_navegador.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="header" content="Visualizar mensagem"/>
+    
+    <script language="JavaScript" type="text/javascript">
+        function documentOnLoad() {
+        	$("span.spanInfo").tooltip({
+                track: true, // Para que possa se movimentar
+                fixPNG: true
+            });           
+        }
+    </script>
+    
+    <style type="text/css">
+    	.spanInfo {
+    		cursor: pointer;
+    	}
+    </style>
+        
+            <script type="text/javascript">          
+                var sessionTimeOut = 1800;
+                var sessionTimePassed;
+                var sessionCounterId;
+                
+                $(document).ready(function() {
+					verifySessionTimedOut();
+                });
+                
+                $(document).ajaxSuccess(function(event, XMLHttpRequest, ajaxOptions) {
+                    if (sessionTimePassed < sessionTimeOut &&
+                        ajaxOptions.url.indexOf('/sentinela') == 0) {
+                        sessionTimePassed = 0;
+                    }
+                });
+                
+                function verifySessionTimedOut() {
+                	sessionTimePassed = 0;
+                	
+                    sessionCounterId = setInterval(function() {
+                        sessionTimePassed += 1;
+                        remaining = sessionTimeOut - sessionTimePassed;
+                        
+                        if (remaining == 59) {
+        	        		$( "#dialog-expire" ).dialog({
+        	        			closeOnEscape: false,
+        	        			open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();},        	        			
+        	        			modal: true,
+        	        			buttons: {
+        	        				"Ainda estou aqui": function () {
+        	        					$("#dialog-expire").dialog('close');
+        	        					if(remaining > 0) {
+	        	        					$.post("principal.jsp").always(function(){});
+	        	        					clearInterval(sessionCounterId);
+	        	        					verifySessionTimedOut();
+        	        					}
+        	        				}
+        	        			}
+        	        		});                        	
+                        }
+                        
+                        if (remaining == 0) {
+                            clearInterval(sessionCounterId);
+                            $("#time").text("Sessão expirada!");
+                            return;
+                        }
+                        
+                        min = "" + Math.floor(remaining / 60);
+                        sec = "" + (remaining % 60);
+                        if (min.length == 1)
+                            min = "0" + min;
+                        if (sec.length == 1)
+                            sec = "0" + sec;
+                        text = min + ":" + sec;
+                        $("#time").text(text);
+                    }, 1000);
+                }
+            </script>
+        
+    </head>
+    <body onload="documentOnLoad()">
+    	<div id="dialog-expire" title="Revalidar sessão?" style="display:none;">
+			<p>
+				<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+				Tempo de utilização expirando. Revalide sua sessão!  
+			</p>
+		</div>
+    	
+    	
+        
+<div id="geral">
+<div id="header">
+<div class="tit">
+<h1>UNIVERSIDADE ESTADUAL PAULISTA</h1>
+<h1>&quot;J&Uacute;LIO DE MESQUITA FILHO&quot;</h1>
+<h1 class="cp"> </h1>
+</div>
+<div class="unid">
+<h1>Portal de Sistemas</h1>
+</div>
+<div class="unids">
+<h1>Portal de Sistemas</h1>
+</div>
+<div class="menu"></div>
+</div>
+
+        
+<div id="e">
+<div id="emapa"><!-- MONTADO EM TEMPO DE EXECUÇÃO PELO JAVASCRIPT --></div>
+<div id="em">
+<ul id="menuesq">
+            
+
+    
+
+
+<li><a href="/sentinela/sentinela.showDesktop.action" title="Listar módulos disponiveis">Módulos</a></li>
+<li class="menu-esq-comfilho"><a href="#" title="Mensagens" class="comfilho">Mensagens</a>
+  <ul>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=recebidas" title="Recebidas">Recebidas</a></li>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=enviadas" title="Enviadas">Enviadas</a></li>                    
+  </ul>
+</li>
+<li><a href="/sentinela/user.openChangePassword.action" title="Alterar Senha">Alterar Senha</a></li>
+<li><a href="/sentinela/user.openChangeEmail.action" title="Alterar E-mail de Login">Alterar E-mail</a></li>
+
+<li><a href="/sentinela/common.logout.action" title="Sair">Sair</a></li>
+
+
+
+        
+</ul>
+<div id="dev">
+</div>
+</div>
+</div>
+<script language="JavaScript" type="text/javascript">
+<!--
+try {
+CarregaMenu('menuesq');
+} catch (e) { }
+//-->
+</script>
+<hr />
+
+        <div id="c" align="center">
+            <div id="ct" align="left">
+            	<div id="toolbar">
+                    <span id="time"></span>
+                    <a href="javascript:window.print()"><img src="/sentinela/skinunesp/imgs/icn_print.gif" alt="Imprimir" />Imprimir</a>
+                    <a href="javascript:redimensionar_toggle()"><img id="toolbar_maximizar" alt="Maximizar" src="/sentinela/skinunesp/imgs/window_fullscreen.png"/><img id="toolbar_restaurar" alt="Restaurar" src="/sentinela/skinunesp/imgs/window_nofullscreen.png"/></a><hr style="clear:both;display:none;" /></div>
+                <h2>Mensagem recebidas</h2>
+            </div>
+            <div id="cc">
+                <div class="infomsg">Visualizar mensagem</div>
+
+
+
+
+
+               <!-- Exibe erros de banco de dados -->                
+                
+
+                <!-- Exibe mensagens caso existam -->
+                
+                
+                <!-- Exibe erros caso existam -->
+                
+
+                <center>
+  <form name="form_email" method="post" action="">
+    <table width="90%">
+        <tr>
+            <th colspan="2">Mensagem</th>
+        </tr>
+        
+          <tr>
+            <td width="5%" align="center" nowrap="nowrap"> <b>De:  </b></td>
+            <td width="85%">Geraldo Forti Pereira da Silva</td>            
+          </tr>
+        
+                     
+        <tr>
+            <td width="5%" nowrap="nowrap"><b>Assunto</b></td>
+            <td width="85%">Renovação de Matrícula para o ano letivo de 2018 - Informações Gerais </td>
+        </tr>
+        <tr>
+            <td width="5%" nowrap="nowrap"><b>Data de envio</b></td>
+            <td width="85%">04/01/2018 às 16:52</td>
+        </tr>                 
+        
+            <tr>
+                <td width="5%"> <b>Anexo (s)</b></td>
+                <td width="85%">
+                  
+                     <img border="0" src="/sentinela/skinunesp/imgs/anexo.png" alt="" />
+                     <a href="/sentinela/common.buscarArquivo.action?id=2195630&hash=5a5b4ba814019e7d8d484c8293b2427c" target="_blank">
+                        ATENÇÃO_ALUNOS_DO_IGCE-renovação_matrícula_2018.pdf
+                     </a>
+                     <br/>
+                  
+                </td>
+            </tr>
+        
+        <tr>            
+            <td colspan="2" align="left" bgcolor="white">
+              Prezados Alunos, boa tarde.<br />
+Segue anexo orienta&ccedil;&otilde;es sobre a renova&ccedil;&atilde;o de matr&iacute;cula para o ano letivo de 2018.<br />
+Qualquer d&uacute;vida entrem em contato.<br />
+Att.<br />
+Geraldo<br />
+sgigce@rc.unesp.br
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="barrabotao">
+                <center>
+                  <input name="btn_voltar" type="button" value="Voltar" class="botao" onClick="window.location.href='/sentinela/common.openMessage.action?emailTipo=recebidas';">
+                </center>                
+            </td>
+        </tr>    
+    </table>
+  </form>
+ </center>
+            </div>
+        </div>
+
+        
+<hr />
+<div id="f">
+<div id="fb">
+<div class="u">
+Portal de Sistemas
+</div>
+<div class="m">
+<ul>
+            <li><a href="/sentinela/common.home.action" class="pri" title="Home">Inicio</a></li>
+            <li><a href='http://www.unesp.br' target="_blank" title="Institucional">Institucional</a></li>
+            
+                <li><a href="/sentinela/common.logout.action" class="ult" title="Portal">Sair</a></li>
+            
+        
+</ul>
+</div>
+</div>
+</div>
+</div>
+        <div id="messagetop">
+            <div id="messagetop_close"><img border="0" src="/sentinela/skinunesp/imgs/invalid.png" alt="Fechar" /></div>
+            <div id="messagetop_content"></div>
+        </div>
+    </body>
+</html>
