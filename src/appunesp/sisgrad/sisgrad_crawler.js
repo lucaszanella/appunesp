@@ -5,18 +5,18 @@ const cheerio            = require("cheerio-without-node-native");
 const sisgradDomain      = `sistemas.unesp.br`;
 const md5                = require("blueimp-md5");
 
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
+
 class build_url {
     constructor(path) {
         this.url  = `https://` + sisgradDomain + path;
         this.path = escapeRegExp(path);
     }
 }
-
-function escapeRegExp(str) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
 
 const paths = {
     login_form            : new build_url('/sentinela'),                   //login form
@@ -27,13 +27,11 @@ const paths = {
     read_message_action   : id   => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 }
 
-//No URL suggestion? Use the alternative
-decide = (url, alternative) => url = url ? url : alternative;
+decide = (url, alternative) => url = url ? url : alternative; //No URL suggestion? Use the alternative
 
-clean = string => string.replace(/[ \t\n]+/g,' ').trim();//removes extra whitespace
+clean  = string => string.replace(/[ \t\n]+/g,' ').trim(); //removes extra whitespace
 
 export class SisgradCrawler {
-    //cookieStores = [new CookieStore(sisgradDomain)];
 
     constructor(username, password, userAgent=false) {
         this.userAgent = userAgent;
@@ -46,8 +44,6 @@ export class SisgradCrawler {
                       userAgent     = false, 
                       cookieStores  = false,
                       redirect      = false) => {
-            //If no cookie stores passed, use the default one
-            //cookieStores = cookieStores ? false : this.cookieStores;
 
             return crawl(path,
                          postData     = postData, 
@@ -60,12 +56,12 @@ export class SisgradCrawler {
         this._crawl = this.redoLoginIfNecessary;
     }
 
-    //If for some reason we got unlogged
-    redoLoginIfNecessary = async function(url) {
+    redoLoginIfNecessary = async function(url) { //If for some reason we got unlogged
         response = await this.crawl(url);
+
         if (pathIsFromUrl(paths.login_form.path, response.url)) {
-            console.log('doing login again...');
-            console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
+            console.log('doing login again...'); console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
+            
             response = await this.crawl(decide(undefined, paths.login_form_redirected.url));
             return response;
         } else {
@@ -81,22 +77,18 @@ export class SisgradCrawler {
         }
     }
                 
-
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
         r = await this.crawl(paths.login_form.url);
-        console.log(r.url)
-        //If we ended in the actual login page, it contains an HTML
-        //(not HTTP) redirect to the next page. Let's go to it.
-        if (pathIsFromUrl(paths.login_form.path, r.url)) {
+
+        if (pathIsFromUrl(paths.login_form.path, r.url)) {   //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
             console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
             r = await this.crawl(decide(undefined, paths.login_form_redirected.url));
         }
-        console.log(r.url)
-        //If we're in the login.open.action, we should find a form there
-        //so we fill this form an then send it
-        if (pathIsFromUrl(paths.login_form_redirected.path, r.url)) {
+
+        if (pathIsFromUrl(paths.login_form_redirected.path, r.url)) {//If we're in the login.open.action, we should find a form there so we fill this form an then send it
             console.log('doing login to ' + paths.login_action.url + '...');
+            
             r = await this.crawl(decide(undefined, paths.login_action.url));
             $ = r.$;
             forms = $('form');
@@ -132,13 +124,9 @@ export class SisgradCrawler {
             );
           
             serialized = serialized.substr(1, serialized.length); //removes first '&'
-            //if (serialized)
+
             post = encodeURI(serialized);
-            //else
-                //post = encodeURIComponent("username=" + this.username + "&" + "password=" + this.password);
-            console.log('encoded uri: ' + post + '. Sending login NOW:');
             r = await this.crawl(decide(undefined, paths.login_action.url), postData = post);
-            console.log('url now: ' + r.url);
         }
         if (pathIsFromUrl(paths.show_desktop_action.path, r.url)) {
             return true;
@@ -150,8 +138,7 @@ export class SisgradCrawler {
     readMessages = async function(page = 0) {
         console.log('reading messages...')
         r = await this._crawl(decide(undefined, paths.read_messages_action(page).url));
-        console.log(r.url);
-        console.log(paths.read_messages_action(page).path);
+
         if (pathIsFromUrl(paths.read_messages_action(page).path, r.url)) {
             $ = r.$;
             table = $('#destinatario').parsetable(false, false, false);
@@ -172,7 +159,6 @@ export class SisgradCrawler {
                 }
             }
             console.log(data);
-            console.log('going to record the messages');
             data.map(this.recordMessage); //TODO: slow down recording, too many in async mode
         }
         return data;
@@ -203,18 +189,17 @@ export class SisgradCrawler {
         if (realm.objects(messagesTable).filtered(`id = "${id}"`).length==0){
             realm.write(() => realm.create(messagesTable, doc))
             console.log('recording message ' + message + "at " + messagesTable);
-            console.log(message);
         }
     }
 
     updateMessages = async function() {
         record  = (message, id) => () => {
-            id = md5(message.sisgradId)//Todo: unify id extractor
+            id = md5(message.sisgradId); //Todo: unify id extractor
             doc =   {
                         id             : id,
                         message        : '',
                     }
-            realm.create(messagesTable, doc)            
+            realm.create(messagesTable, doc);          
         }
 
         emptyMessages = realm.objects(messagesTable).filtered('message = ""')
