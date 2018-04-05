@@ -49,21 +49,21 @@ export async function crawl(url,
         }
     );
 
-    const http   = await response;
-    const header = http.headers;
-    const html   = await http.text();
+    const http       = await response;
+    const header     = http.headers;
+    const html       = await http.text();
     const parsedHtml = cheerio.load(html, { decodeEntities: false });
     cheerioTableparser(parsedHtml); //Inclused table parser method in cheerio
-    console.log({'html': html})
+    console.log({'html': html});
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
-            header     : header, 
-            redirected : http.redirected,
-            status     : http.status,
-            statusText : http.statusText,
-            url        : http.url,
-            useFinalURL: http.useFinalURL,
-            $          : parsedHtml
+                header     : header, 
+                redirected : http.redirected,
+                status     : http.status,
+                statusText : http.statusText,
+                url        : http.url,
+                useFinalURL: http.useFinalURL,
+                $          : parsedHtml
            };
 }
 

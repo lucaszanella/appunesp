@@ -53,19 +53,12 @@ export class SisgradCrawler {
                          redirect     = redirect)
         }
 
-        this._crawl = redoLoginIfNecessary;
+        this._crawl = this.redoLoginIfNecessary;
     }
 
-    messagesFromRealm = () => {
-        try {  
-            return realm.objects(messagesTable);
-        } catch (error) {
-            return [];
-        }
-    }
-    
     //If for some reason we got unlogged
-    redoLoginIfNecessary = async function(response) {
+    redoLoginIfNecessary = async function(url) {
+        response = await this.crawl(url);
         if (pathIsFromUrl(paths.login_form.path, response.url)) {
             console.log('doing login again...');
             console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
@@ -76,9 +69,19 @@ export class SisgradCrawler {
         }
     }
 
+    messagesFromRealm = () => {
+        try {  
+            return realm.objects(messagesTable);
+        } catch (error) {
+            return [];
+        }
+    }
+                
+
+
     performLogin = async function() {
-        console.log('loading login page...');
-        r = await this.crawl(paths.login_form);
+        console.log('loading login page: ' + paths.login_form.url);
+        r = await this.crawl(paths.login_form.url);
         console.log(r.url)
         //If we ended in the actual login page, it contains an HTML
         //(not HTTP) redirect to the next page. Let's go to it.
@@ -144,8 +147,9 @@ export class SisgradCrawler {
     readMessages = async function(page = 0) {
         console.log('reading messages...')
         r = await this._crawl(decide(undefined, paths.read_messages_action(page).url));
-
-        if (pathIsFromUrl(paths.read_messages_action.path, r.url)) {
+        console.log(r.url);
+        console.log(paths.read_messages_action(page).path);
+        if (pathIsFromUrl(paths.read_messages_action(page).path, r.url)) {
             $ = r.$;
             table = $('#destinatario').parsetable(false, false, false);
             data = [];
@@ -173,24 +177,25 @@ export class SisgradCrawler {
 
     readMessage = async function(id) {
         r = await this._crawl(decide(undefined, paths.read_message_action(id)));
-        if (pathIsFromUrl(paths.read_message_action(id).path, r.url)) {
-            $ = r.$;
-            table = $('#destinatario').parsetable(false, false, false);   
-        }
+        if (pathIsFromUrl(paths.read_message_action(id).path, r.url))
+            table = r.$('#destinatario').parsetable(false, false, false);   
+        
         return data;
     }
  
     recordMessage = async function (message) {
         id = md5(message.sisgradId);
-        doc =  {id             : id                   ,
-                favorite       : message.favorite     ,
-                hasAttachment  : message.hasAttachment,
-                sentBy         : message.sentBy       ,
-                subject        : message.subject      ,
-                sentDate       : message.sentDate     ,
-                readDate       : message.readDate     ,
-                sisgradId      : message.sisgradId    ,
-                message        : ''                   ,}
+        doc =  {
+                    id             : id                   ,
+                    favorite       : message.favorite     ,
+                    hasAttachment  : message.hasAttachment,
+                    sentBy         : message.sentBy       ,
+                    subject        : message.subject      ,
+                    sentDate       : message.sentDate     ,
+                    readDate       : message.readDate     ,
+                    sisgradId      : message.sisgradId    ,
+                    message        : ''                   ,
+                }
 
         if (realm.objects(messagesTable).filtered(`id = "${id}"`).length==0){
             realm.write(() => realm.create(messagesTable, doc))
