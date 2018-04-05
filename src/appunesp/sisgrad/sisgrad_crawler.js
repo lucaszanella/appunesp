@@ -8,8 +8,12 @@ const md5                = require("blueimp-md5");
 class build_url {
     constructor(path) {
         this.url  = `https://` + sisgradDomain + path;
-        this.path = path;
+        this.path = escapeRegExp(path);
     }
+}
+
+function escapeRegExp(str) {
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
@@ -78,7 +82,6 @@ export class SisgradCrawler {
     }
                 
 
-
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
         r = await this.crawl(paths.login_form.url);
@@ -92,7 +95,7 @@ export class SisgradCrawler {
         console.log(r.url)
         //If we're in the login.open.action, we should find a form there
         //so we fill this form an then send it
-        if (pathIsFromUrl(paths.login_action.path, r.url)) {
+        if (pathIsFromUrl(paths.login_form_redirected.path, r.url)) {
             console.log('doing login to ' + paths.login_action.url + '...');
             r = await this.crawl(decide(undefined, paths.login_action.url));
             $ = r.$;
