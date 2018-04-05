@@ -1,5 +1,7 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
 const cheerio = require("cheerio-without-node-native");
+const cheerioTableparser = require('cheerio-tableparser');
+
 //const cheerio = require("cheerio");
     
     // fetch logger
@@ -50,6 +52,8 @@ export async function crawl(url,
     const http   = await response;
     const header = http.headers;
     const html   = await http.text();
+    const parsedHtml = cheerio.load(html, { decodeEntities: false });
+    cheerioTableparser(parsedHtml); //Inclused table parser method in cheerio
     console.log({'html': html})
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
@@ -59,7 +63,7 @@ export async function crawl(url,
             statusText : http.statusText,
             url        : http.url,
             useFinalURL: http.useFinalURL,
-            $          : cheerio.load(html, { decodeEntities: false })
+            $          : parsedHtml
            };
 }
 

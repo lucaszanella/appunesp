@@ -2,7 +2,6 @@ import { CookieStore } from '../simple_crawler/cookies.js'
 import { crawl }       from '../simple_crawler/crawler.js'
 import realm, {messagesTable} from '../realm';
 const cheerio            = require("cheerio-without-node-native");
-const cheerioTableparser = require('cheerio-tableparser');
 const sisgradDomain      = `sistemas.unesp.br`;
 const md5                = require("blueimp-md5");
 
@@ -13,19 +12,20 @@ class build_url {
     }
 }
 
-pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url);
+pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
 
 const paths = {
     login_form            : new build_url('/sentinela'),                   //login form
     login_form_redirected : new build_url('/sentinela/login.open.action'), //login form posts to this url
     login_action          : new build_url('/sentinela/login.action'),      //actual login
     show_desktop_action   : new build_url('/sentinela/sentinela.showDesktop.action'),
-    read_messages_action  : new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
-    read_message_action   : id => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
+    read_messages_action  : page => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
+    read_message_action   : id   => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 }
 
 //No URL suggestion? Use the alternative
 decide = (url, alternative) => url = url ? url : alternative;
+
 clean = string => string.replace(/[ \t\n]+/g,' ').trim();//removes extra whitespace
 
 export class SisgradCrawler {
@@ -52,6 +52,8 @@ export class SisgradCrawler {
                          cookieStores = cookieStores,
                          redirect     = redirect)
         }
+
+        this._crawl = redoLoginIfNecessary;
     }
 
     messagesFromRealm = () => {
@@ -61,24 +63,36 @@ export class SisgradCrawler {
             return [];
         }
     }
+    
+    //If for some reason we got unlogged
+    redoLoginIfNecessary = async function(response) {
+        if (pathIsFromUrl(paths.login_form.path, response.url)) {
+            console.log('doing login again...');
+            console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
+            response = await this.crawl(decide(undefined, paths.login_form_redirected.url));
+            return response;
+        } else {
+            return response;
+        }
+    }
 
     performLogin = async function() {
         console.log('loading login page...');
-        c = await this.crawl(paths.login_form);
-        console.log(c.url)
+        r = await this.crawl(paths.login_form);
+        console.log(r.url)
         //If we ended in the actual login page, it contains an HTML
         //(not HTTP) redirect to the next page. Let's go to it.
-        if (/\/sentinela/.test(c.url) && !/\/sentinela\/.+/.test(c.url)) {
+        if (pathIsFromUrl(paths.login_form.path, r.url)) {
             console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
-            c = await this.crawl(decide(undefined, paths.login_form_redirected.url));
+            r = await this.crawl(decide(undefined, paths.login_form_redirected.url));
         }
-        console.log(c.url)
+        console.log(r.url)
         //If we're in the login.open.action, we should find a form there
         //so we fill this form an then send it
-        if (pathIsFromUrl(paths.login_action.path, c.url)) {
+        if (pathIsFromUrl(paths.login_action.path, r.url)) {
             console.log('doing login to ' + paths.login_action.url + '...');
-            c = await this.crawl(decide(undefined, paths.login_action.url));
-            $ = c.$;
+            r = await this.crawl(decide(undefined, paths.login_action.url));
+            $ = r.$;
             forms = $('form');
 
             var login_form = null;
@@ -113,15 +127,14 @@ export class SisgradCrawler {
           
             serialized = serialized.substr(1, serialized.length); //removes first '&'
             //if (serialized)
-                post = encodeURI(serialized);
+            post = encodeURI(serialized);
             //else
                 //post = encodeURIComponent("username=" + this.username + "&" + "password=" + this.password);
             console.log('encoded uri: ' + post + '. Sending login NOW:');
-            c = await this.crawl(decide(undefined, paths.login_action.url), postData = post);
-            console.log('url now: ' + c.url);
-
+            r = await this.crawl(decide(undefined, paths.login_action.url), postData = post);
+            console.log('url now: ' + r.url);
         }
-        if (pathIsFromUrl(paths.show_desktop_action.path, c.url)) {
+        if (pathIsFromUrl(paths.show_desktop_action.path, r.url)) {
             return true;
         }
         //TODO: If c contains login success, return true. Otherwise return false
@@ -130,14 +143,10 @@ export class SisgradCrawler {
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        c = await this.crawl(decide(undefined, paths.read_messages_action.url));
-        if (pathIsFromUrl(paths.login_form_redirected.path, c.url)) {
-            this.performLogin(); 
-            c = await this.crawl(decide(undefined, paths.read_messages_action.url));
-        }
-        if (pathIsFromUrl(paths.read_messages_action.path, c.url)) {
-            $ = c.$;
-            cheerioTableparser($);
+        r = await this._crawl(decide(undefined, paths.read_messages_action(page).url));
+
+        if (pathIsFromUrl(paths.read_messages_action.path, r.url)) {
+            $ = r.$;
             table = $('#destinatario').parsetable(false, false, false);
             data = [];
 
@@ -146,7 +155,7 @@ export class SisgradCrawler {
                     doc = {
                         favorite       : clean($(table[0][i]).text()),
                         hasAttachment  : clean($(table[1][i]).text()),
-                        sentBy         : clean(table[2][i]),
+                        sentBy         : clean(table[2][i])          ,
                         subject        : clean($(table[3][i]).text()),
                         sentDate       : clean(table[4][i])          ,
                         readDate       : clean(table[5][i])          ,
@@ -157,24 +166,21 @@ export class SisgradCrawler {
             }
             console.log(data);
             console.log('going to record the messages');
-            data.map(this.recordMessage);
+            data.map(this.recordMessage); //TODO: slow down recording, too many in async mode
         }
         return data;
     }
 
     readMessage = async function(id) {
-        c = await this.crawl(decide(undefined, paths.read_message_action(id)));
-        //read_message_action
-        if (pathIsFromUrl(paths.read_message_action(id).path, c.url)) {
-            $ = c.$;
-            cheerioTableparser($);
-            table = $('#destinatario').parsetable(false, false, false);
-            
+        r = await this._crawl(decide(undefined, paths.read_message_action(id)));
+        if (pathIsFromUrl(paths.read_message_action(id).path, r.url)) {
+            $ = r.$;
+            table = $('#destinatario').parsetable(false, false, false);   
         }
         return data;
     }
  
-    recordMessage = message => {
+    recordMessage = async function (message) {
         id = md5(message.sisgradId);
         doc =  {id             : id                   ,
                 favorite       : message.favorite     ,
