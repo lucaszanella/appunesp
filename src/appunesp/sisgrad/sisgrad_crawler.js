@@ -1,17 +1,11 @@
 import { CookieStore } from '../simple_crawler/cookies.js'
-import { crawl }       from '../simple_crawler/crawler.js'
+import { crawl } from '../simple_crawler/crawler.js'
 import realm, {messagesTable} from '../realm';
-const cheerio            = require("cheerio-without-node-native");
-const sisgradDomain      = `sistemas.unesp.br`;
-const md5                = require("blueimp-md5");
+import escapeRegExp from 'utils/escaperegexp';
+const cheerio = require("cheerio-without-node-native");
+const sisgradDomain = `sistemas.unesp.br`;
+const md5 = require("blueimp-md5");
 
-/*
-function escapeRegExp(str) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
-*/
 class build_url {
     constructor(path) {
         this.url  = `https://` + sisgradDomain + path;
@@ -28,7 +22,7 @@ const paths = {
     read_message_action   : id   => new build_url('/sentinela/common.openMessage.action?emailTipo=recebidas'),
 }
 
-decide = (url, alternative) => url = url ? url : alternative; //No URL suggestion? Use the alternative
+//decide = (url, alternative) => url = url ? url : alternative; //No URL suggestion? Use the alternative
 
 clean  = string => string.replace(/[ \t\n]+/g,' ').trim(); //removes extra whitespace
 
@@ -53,7 +47,7 @@ export class SisgradCrawler {
             console.log('doing login again...');
             console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
             
-            response = await this.crawl(paths.login_form_redirected.url, args);
+            response = await this.crawl(path = paths.login_form_redirected.url, args);
             return response;
         } else {
             return response;
@@ -71,17 +65,17 @@ export class SisgradCrawler {
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
 
-        r = await this.crawl(paths.login_form.url, 
+        r = await this.crawl(path = paths.login_form.url, 
                              expectUrl = paths.login_form.path,
                              expectThrow = true);
 
-        r = await this.crawl(paths.login_form_redirected.url, 
+        r = await this.crawl(path = paths.login_form_redirected.url, 
                              expectUrl = login_form_redirected,
                              expectThrow = true); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
         
         console.log('doing login to ' + paths.login_action.url + '...');
         
-        r = await this.crawl(paths.login_action.url, 
+        r = await this.crawl(path = paths.login_action.url, 
                              expectUrl = paths.login_action.path,
                              expectThrow = true);
         $ = r.$;
@@ -102,8 +96,9 @@ export class SisgradCrawler {
             Cheerio non-node version`s serializeArray doesn't work. 
             Small tweak before I fix things:
         */
+
         login = [{ name: 'txt_usuario', value: '' },
-                    { name: 'txt_senha'  , value: '' }]
+                 { name: 'txt_senha'  , value: '' }]
         
         serialized = "";
         
@@ -120,7 +115,7 @@ export class SisgradCrawler {
         serialized = serialized.substr(1, serialized.length); //removes first '&'
 
         post = encodeURI(serialized);
-        r = await this.crawl(paths.login_action.url, 
+        r = await this.crawl(path        = paths.login_action.url, 
                              postData    = post, 
                              expectUrl   = login_form_redirected.path,
                              expectThrow = true);      
@@ -131,7 +126,7 @@ export class SisgradCrawler {
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        r = await this._crawl(paths.read_messages_action(page).url, 
+        r = await this._crawl(path        = paths.read_messages_action(page).url, 
                               expectUrl   = paths.read_messages_action(page).path,
                               expectThrow = true);
         
@@ -160,8 +155,8 @@ export class SisgradCrawler {
     }
 
     readMessage = async function(id) {
-        r = await this._crawl(paths.read_message_action(id),
-                              expectUrl = paths.read_message_action(id).path,
+        r = await this._crawl(path        = paths.read_message_action(id),
+                              expectUrl   = paths.read_message_action(id).path,
                               expectThrow = true);
 
         table = r.$('#destinatario').parsetable(false, false, false);   

@@ -1,0 +1,4 @@
+{
+  "presets": ["es2015", "babel-plugin-transform-es2015-parameters", "babel-plugin-transform-es2015-arrow-functions"],
+  "plugins": []
+}

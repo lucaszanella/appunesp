@@ -1,26 +1,23 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
+import escapeRegExp from 'utils/escaperegexp';
 const cheerio = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
-
-function escapeRegExp(str) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
 
 pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
 
 
 //const cheerio = require("cheerio");
     
-    // fetch logger
-    global._fetch = fetch;
-    global.fetch = function (uri, options, ...args) {
-        return global._fetch(uri, options, ...args).then((response) => {
-        console.log('Fetch', { request: { uri, options, ...args }, response });
-        return response;
-        });
-    };
+// fetch logger
+global._fetch = fetch;
+global.fetch = function (uri, options, ...args) {
+    return global._fetch(uri, options, ...args).then((response) => {
+    console.log('Fetch', { request: { uri, options, ...args }, response });
+    return response;
+    });
+};
     
-export async function crawl(url, 
+export async function crawl(path         = url      , 
                             postData     = false    , 
                             contentType  = false    , 
                             userAgent    = false    ,
