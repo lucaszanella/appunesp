@@ -60,7 +60,8 @@ export class SisgradCrawler {
                                expectThrow  = expectThrow)
         r = await response();
 
-        if (pathIsFromUrl(paths.login_form.path, r.url) && redirectLogin) {
+        if (redirectLogin && pathIsFromUrl(paths.login_form.path, r.url)) {
+            console.log('hmmm, logged out, doing login again');
             this.performLogin();
             r = await response();
             return r;
@@ -85,7 +86,7 @@ export class SisgradCrawler {
                              redirectLogin = false);
 
         r = await this.crawl(path          = paths.login_form_redirected.url, 
-                             expectUrl     = login_form_redirected,
+                             expectUrl     = paths.login_form_redirected.path,
                              redirectLogin = false); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
 
         console.log('doing login to ' + paths.login_action.url + '...');
@@ -133,17 +134,17 @@ export class SisgradCrawler {
 
         r = await this.crawl(path          = paths.login_action.url, 
                              postData      = post, 
-                             expectUrl     = login_form_redirected.path,
+                             expectUrl     = paths.login_form_redirected.path,
                              redirectLogin = false);      
         return true;
-                
+
         //TODO: If r contains login success, return true. Otherwise return false
     }
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
         r = await this.crawl(path        = paths.read_messages_action(page).url, 
-                              expectUrl   = paths.read_messages_action(page).path);
+                             expectUrl   = paths.read_messages_action(page).path);
         
         $ = r.$;
         table = $('#destinatario').parsetable(false, false, false);

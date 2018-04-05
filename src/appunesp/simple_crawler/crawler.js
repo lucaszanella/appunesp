@@ -35,7 +35,7 @@ export async function crawl(path         = undefined,
     //        url.includes(cookieStore.domain) ? headers['Cookies'] = cookieStore.getEncoded() : console.log('nothing');
         
     const response = fetch(
-        url,
+        path,
         {
             body          : postData ? postData : undefined, // must match 'Content-Type' header
             headers       : headers,
@@ -59,8 +59,8 @@ export async function crawl(path         = undefined,
     const parsedHtml = cheerio.load(html, { decodeEntities: false });
     cheerioTableparser(parsedHtml); //Inclused table parser method in cheerio
     console.log({'html': html});
-    if (expectThrow)
-        pathIsFromUrl(expect, http.url) ? console.log("THROW") : null
+    if (expectThrow && expectUrl)
+        pathIsFromUrl(expectUrl, http.url) ? console.log("THROW") : null
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
                 header     : header, 
@@ -70,7 +70,7 @@ export async function crawl(path         = undefined,
                 url        : http.url,
                 useFinalURL: http.useFinalURL,
                 $          : parsedHtml,
-                expect     : expect ? pathIsFromUrl(expect, http.url) : undefined,
+                expect     : expectUrl ? pathIsFromUrl(expectUrl, http.url) : undefined,
            };
 }
 
