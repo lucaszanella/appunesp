@@ -1,7 +1,7 @@
 import { CookieStore } from '../simple_crawler/cookies.js';
-import { crawl } from '../simple_crawler/crawler.js';
+import { crawl, pathIsFromUrl } from '../simple_crawler/crawler.js';
 import realm, {messagesTable} from '../realm';
-import escapeRegExp from 'utils/escaperegexp';
+import escapeRegExp from '../utils/escaperegexp';
 const cheerio = require("cheerio-without-node-native");
 const sisgradDomain = `sistemas.unesp.br`;
 const md5 = require("blueimp-md5");
@@ -32,25 +32,40 @@ export class SisgradCrawler {
         this.userAgent = userAgent;
         this.username  = username;
         this.password  = password;
-
-        this.crawl = (...args) => {
+        /*
+        this.crawl = (args) => {
+            console.log('crawling');
+            console.log(arguments);
             return crawl(userAgent = this.userAgent, args)
         }
-
-        this._crawl = this.redoLoginIfNecessary;
+        */
+        this.crawl = this.redoLoginIfNecessary;
     }
 
-    redoLoginIfNecessary = async function(...args) { //If for some reason we got unlogged
-        response = await this.crawl(args, expectUrl = paths.login_form.path);
+    //Used some messy hacks to deal with named arguments and avoid repetition of this huge parameters list
+    redoLoginIfNecessary = async function(path         = undefined, 
+                                          postData     = false    , 
+                                          contentType  = false    , 
+                                          userAgent    = false    ,
+                                          redirect     = true     ,
+                                          expectUrl    = undefined,
+                                          expectThrow  = true     ,
+                                          redirectLogin= true) { //If for some reason we got unlogged
+        response = () => crawl(path         = path, 
+                               postData     = postData, 
+                               contentType  = contentType, 
+                               userAgent    = userAgent ? userAgent : this.userAgent,
+                               redirect     = redirect,
+                               expectUrl    = expectUrl,
+                               expectThrow  = expectThrow)
+        r = await response();
 
-        if (response.expect) {
-            console.log('doing login again...');
-            console.log('redirecting manually to ' + paths.login_form_redirected.url + '...');
-            
-            response = await this.crawl(path = paths.login_form_redirected.url, args);
-            return response;
+        if (pathIsFromUrl(paths.login_form.path, r.url) && redirectLogin) {
+            this.performLogin();
+            r = await response();
+            return r;
         } else {
-            return response;
+            return r;
         }
     }
 
@@ -65,19 +80,19 @@ export class SisgradCrawler {
     performLogin = async function() {
         console.log('loading login page: ' + paths.login_form.url);
 
-        r = await this.crawl(path        = paths.login_form.url, 
-                             expectUrl   = paths.login_form.path,
-                             expectThrow = true);
+        r = await this.crawl(path          = paths.login_form.url, 
+                             expectUrl     = paths.login_form.path,
+                             redirectLogin = false);
 
-        r = await this.crawl(path        = paths.login_form_redirected.url, 
-                             expectUrl   = login_form_redirected,
-                             expectThrow = true); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
-        
+        r = await this.crawl(path          = paths.login_form_redirected.url, 
+                             expectUrl     = login_form_redirected,
+                             redirectLogin = false); //If we ended in the actual login page, it contains an HTML (not HTTP) redirect to the next page. Let's go to it.
+
         console.log('doing login to ' + paths.login_action.url + '...');
         
-        r = await this.crawl(path        = paths.login_action.url, 
-                             expectUrl   = paths.login_action.path,
-                             expectThrow = true);
+        r = await this.crawl(path          = paths.login_action.url, 
+                             expectUrl     = paths.login_action.path,
+                             redirectLogin = false);
         $ = r.$;
         forms = $('form');
 
@@ -116,10 +131,10 @@ export class SisgradCrawler {
 
         post = encodeURI(serialized);
 
-        r = await this.crawl(path        = paths.login_action.url, 
-                             postData    = post, 
-                             expectUrl   = login_form_redirected.path,
-                             expectThrow = true);      
+        r = await this.crawl(path          = paths.login_action.url, 
+                             postData      = post, 
+                             expectUrl     = login_form_redirected.path,
+                             redirectLogin = false);      
         return true;
                 
         //TODO: If r contains login success, return true. Otherwise return false
@@ -127,9 +142,8 @@ export class SisgradCrawler {
 
     readMessages = async function(page = 0) {
         console.log('reading messages...')
-        r = await this._crawl(path        = paths.read_messages_action(page).url, 
-                              expectUrl   = paths.read_messages_action(page).path,
-                              expectThrow = true);
+        r = await this.crawl(path        = paths.read_messages_action(page).url, 
+                              expectUrl   = paths.read_messages_action(page).path);
         
         $ = r.$;
         table = $('#destinatario').parsetable(false, false, false);
@@ -156,9 +170,8 @@ export class SisgradCrawler {
     }
 
     readMessage = async function(id) {
-        r = await this._crawl(path        = paths.read_message_action(id),
-                              expectUrl   = paths.read_message_action(id).path,
-                              expectThrow = true);
+        r = await this.crawl(path        = paths.read_message_action(id),
+                              expectUrl   = paths.read_message_action(id).path);
         
         form  = r.$('form[name=form_email]');
         table = $('table', form).first().parsetable(false, false, false);
@@ -182,7 +195,7 @@ export class SisgradCrawler {
 
         if (realm.objects(messagesTable).filtered(`id = "${id}"`).length==0){
             realm.write(() => realm.create(messagesTable, doc))
-            console.log('recording message ' + message + "at " + messagesTable);
+            console.log('recording message ' + message + " at " + messagesTable);
         }
     }
 

@@ -1,10 +1,9 @@
 import { CookieStore, locateCookiesInHeader } from "./cookies";
-import escapeRegExp from 'utils/escaperegexp';
+import escapeRegExp from '../utils/escaperegexp';
 const cheerio = require("cheerio-without-node-native");
 const cheerioTableparser = require('cheerio-tableparser');
 
-pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
-
+export const pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
 
 //const cheerio = require("cheerio");
     
@@ -17,14 +16,14 @@ global.fetch = function (uri, options, ...args) {
     });
 };
     
-export async function crawl(path         = url      , 
+export async function crawl(path         = undefined, 
                             postData     = false    , 
                             contentType  = false    , 
                             userAgent    = false    ,
                             cookieStores = false    ,
                             redirect     = true     ,
                             expectUrl    = undefined,
-                            expectThrow  = undefined) {
+                            expectThrow  = true) {
     headers = {};
     headers['Agent'] = userAgent ?  userAgent : 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0';
     headers['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
@@ -60,6 +59,8 @@ export async function crawl(path         = url      ,
     const parsedHtml = cheerio.load(html, { decodeEntities: false });
     cheerioTableparser(parsedHtml); //Inclused table parser method in cheerio
     console.log({'html': html});
+    if (expectThrow)
+        pathIsFromUrl(expect, http.url) ? console.log("THROW") : null
     //cookieStores ? updateCookies(http.url, header, cookieStores): undefined;
     return {
                 header     : header, 
