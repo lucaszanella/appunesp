@@ -200,6 +200,7 @@ export class SisgradCrawler {
         sentDate = table[1][3];
 
         return {
+            id         : id,
             sender     : sender,
             subject    : subject,
             message    : message,
@@ -245,7 +246,10 @@ export class SisgradCrawler {
 
             for (message of queue) {
                 await message;
-                realm.write(record(message, emptyMessage.id));
+                console.log(message.message);
+                console.log(message.id);
+                console.log(message);
+                realm.write(record(message, message.id));
             }
         }
     }

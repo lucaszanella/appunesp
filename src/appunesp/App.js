@@ -1,7 +1,7 @@
-import React, { Component                          } from 'react';
-import { List, ListItem, SearchBar                 } from "react-native-elements";
+import React, { Component } from 'react';
+import { List, ListItem, SearchBar, Avatar } from "react-native-elements";
 import { SisgradCrawler, schemas as SisgradSchemas } from './sisgrad/sisgrad_crawler.js';
-import { username, password                        } from './credentials.js';
+import { username, password } from './credentials.js';
 import {
     Platform,
     StyleSheet,
@@ -65,9 +65,18 @@ export default class App extends Component<Props> {
                 data={this.state.data}
                 renderItem={
                     ({item}) => (
-                        <View style={{flex: 1, flexDirection: 'column', marginBottom:5}}>
-                            <Text style={styles.subject}>{item.subject}</Text>
-                            <Text style={styles.sentby}>{item.sentBy}</Text>
+                        <View style={{flex: 1, flexDirection: 'row'}}>
+                            <Avatar
+                                medium
+                                rounded
+                                title="MT"
+                                onPress={() => console.log("Works!")}
+                                activeOpacity={0.7}
+                                />
+                            <View style={{flex: 6, flexDirection: 'column', marginBottom:5}}>
+                                <Text style={styles.subject} >{item.subject}</Text>
+                                <Text style={styles.sentby} >{item.sentBy}</Text>
+                            </View>
                         </View>
                         
                     /*s
@@ -108,7 +117,6 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         marginLeft: 10,
         marginRight: 10,
-
     },
     sentby: {
         fontSize: 10,
