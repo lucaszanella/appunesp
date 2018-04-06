@@ -41,13 +41,18 @@ export default class App extends Component<Props> {
     componentDidMount() {
         console.log("componentDidMount");
 
+        updateMessages = () => {
+            console.log('updating messages');
+            Sisgrad.updateMessages()
+        }
+
         writeMessages = messages => {
             this.setState( { loading: false, refreshing: false } )
             for (message of messages)
                 Sisgrad.recordMessage(message);
         }
         readMessages = () => Sisgrad.readMessages().then(writeMessages);
-        Sisgrad.performLogin().then(readMessages);
+        Sisgrad.performLogin().then(readMessages).then(updateMessages);
     }
 
     render() {

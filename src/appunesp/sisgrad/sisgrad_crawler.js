@@ -47,12 +47,12 @@ export class SisgradCrawler {
                                           options) { //If for some reason we got unlogged
         response = () => crawl(path, 
                                {
-                               postData     : options.postData, 
-                               contentType  : options.contentType, 
-                               userAgent    : options.userAgent ? options.userAgent : this.userAgent,
-                               redirect     : options.redirect,
-                               expectUrl    : options.expectUrl,
-                               expectThrow  : options.expectThrow
+                                postData     : options.postData, 
+                                contentType  : options.contentType, 
+                                userAgent    : options.userAgent ? options.userAgent : this.userAgent,
+                                redirect     : options.redirect,
+                                expectUrl    : options.expectUrl,
+                                expectThrow  : options.expectThrow
                                })
         r = await response();
 
@@ -182,11 +182,30 @@ export class SisgradCrawler {
     readMessage = async function(id) {
         r = await this.crawl(paths.read_message_action(id),
                             {expectUrl : paths.read_message_action(id).path});
-        
-        form  = r.$('form[name=form_email]');
-        table = $('table', form).first().parsetable(false, false, false);
+        $ = r.$;
+        form        = $('form[name=form_email]');
+        table       = $('table', form).first().parsetable(false, false, false);
+        message     = clean($(table[0][5]).text());
+        attachments = table[1][4];
+        attachments = $('a', attachments).toArray();
+        attachments = attachments.map(x => $(x));
+        attachments = attachments.map(x => (
+                {
+                link : x.attr('href'), 
+                title: clean(x.text())
+                }
+        ));
+        sender   = table[1][1];
+        subject  = table[1][2];
+        sentDate = table[1][3];
 
-        return;
+        return {
+            sender     : sender,
+            subject    : subject,
+            message    : message,
+            attachments: attachments,
+            sentDate   : sentDate   
+        }
     }
  
     recordMessage = async function (message) {
@@ -209,20 +228,25 @@ export class SisgradCrawler {
         }
     }
 
-    updateMessage = async function() {
+    updateMessages = async function() {
         record  = (message, id) => () => {
-            id = md5(message.sisgradId); //Todo: unify id extractor
-            doc =   {
-                        id             : id,
-                        message        : '',
-                    }
-            realm.create(messagesTable, doc);          
+            message.id = id;
+            message.message = message;          
         }
 
-        emptyMessages = realm.objects(messagesTable).filtered('message = ""');
-        for (emptyMessage of emptyMessages) {
-            message = await this.readMessage(emptyMessage.sisgradId);
-            realm.write(record(message, emptyMessage.id));
+        while (emptyMessages = realm.objects(messagesTable).filtered('message = ""').slice(0,5)) {
+            queue = [];
+
+            for (emptyMessage of emptyMessages) {
+                console.log('going to read message ' + emptyMessage.sisgradId);
+                message =  this.readMessage(emptyMessage.sisgradId);
+                queue.push(message);
+            }
+
+            for (message of queue) {
+                await message;
+                realm.write(record(message, emptyMessage.id));
+            }
         }
     }
 }
