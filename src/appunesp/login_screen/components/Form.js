@@ -38,7 +38,7 @@ export default class Form extends Component {
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <UserInput
           source={usernameImg}
-          placeholder="Username"
+          placeholder="e-mail"
           autoCapitalize={'none'}
           returnKeyType={'done'}
           autoCorrect={false}
@@ -46,7 +46,7 @@ export default class Form extends Component {
         <UserInput
           source={passwordImg}
           secureTextEntry={this.state.showPass}
-          placeholder="Password"
+          placeholder="senha"
           returnKeyType={'done'}
           autoCapitalize={'none'}
           autoCorrect={false}
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   btnEye: {
     position: 'absolute',
-    top: 55,
+    top: 60,
     right: 28,
   },
   iconEye: {

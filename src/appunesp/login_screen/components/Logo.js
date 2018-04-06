@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import {StyleSheet, View, Text, Image} from 'react-native';
 
-import logoImg from '../images/logo.png';
+import logoImg from '../images/unesp-logo2.png';
 
 export default class Logo extends Component {
   render() {
     return (
       <View style={styles.container}>
         <Image source={logoImg} style={styles.image} />
-        <Text style={styles.text}>REACT NATIVE</Text>
       </View>
     );
   }
@@ -21,8 +20,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: 80,
-    height: 80,
+    width: 150,
+    height: 140,
   },
   text: {
     color: 'white',

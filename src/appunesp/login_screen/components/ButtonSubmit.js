@@ -65,9 +65,12 @@ export default class ButtonSubmit extends Component {
               <Text style={styles.text}>LOGIN</Text>
             )}
           </TouchableOpacity>
+          {this.state.isLoading ? (
           <Animated.View
-            style={[styles.circle, {transform: [{scale: changeScale}]}]}
+            style={[styles.circle, {transform: [{scale: changeScale}]}]}//TODO: fix this, what is this for?
           />
+          ):null}
+ 
         </Animated.View>
       </View>
     );
@@ -84,7 +87,7 @@ const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F035E0',
+    backgroundColor: '#99ccff',
     height: MARGIN,
     borderRadius: 20,
     zIndex: 100,
@@ -94,14 +97,14 @@ const styles = StyleSheet.create({
     width: MARGIN,
     marginTop: -MARGIN,
     borderWidth: 1,
-    borderColor: '#F035E0',
+    borderColor: '#66b3ff',
     borderRadius: 100,
     alignSelf: 'center',
     zIndex: 99,
-    backgroundColor: '#F035E0',
+    backgroundColor: '#99ccff',
   },
   text: {
-    color: 'white',
+    color: 'black',
     backgroundColor: 'transparent',
   },
   image: {
