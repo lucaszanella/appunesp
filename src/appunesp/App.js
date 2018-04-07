@@ -52,9 +52,32 @@ export default class App extends Component<Props> {
                 Sisgrad.recordMessage(message);
         }
         readMessages = () => Sisgrad.readMessages().then(writeMessages);
-        Sisgrad.performLogin().then(readMessages).then(updateMessages);
+        //Sisgrad.performLogin().then(readMessages).then(updateMessages);
     }
 
+    renderSeparator = () => {
+        return (
+          <View
+            style={{
+              height: 1,
+              width: "86%",
+              backgroundColor: "#CED0CE",
+              marginLeft: "14%"
+            }}
+          />
+        );
+    };
+
+    initials = name => {
+        x = name.split(" ", 2);
+        if (x.length>=2)
+          return x[0][0]+x[1][0]
+        else if (x.length==1)
+          return x[0][0]
+        else 
+          return "__";
+      };
+    
     render() {
         return (
             <View style={styles.container}>
@@ -63,6 +86,7 @@ export default class App extends Component<Props> {
                 </Text>
                 <FlatList
                 data={this.state.data}
+                ItemSeparatorComponent={this.renderSeparator}
                 renderItem={
                     ({item}) => (
                         <View style={styles.listItem}>
@@ -70,28 +94,18 @@ export default class App extends Component<Props> {
                             <Avatar
                                 medium
                                 rounded
-                                title="MT"
+                                title={this.initials(item.sentBy)}
                                 onPress={() => console.log("Works!")}
                                 activeOpacity={0.7}
                                 />
-                            <View style={{flex: 6, flexDirection: 'column', marginBottom:5}}>
-                                <Text style={styles.subject} >{item.subject}</Text>
+                            <View style={{flex: 9, flexDirection: 'column'}}>
                                 <Text style={styles.sentby} >{item.sentBy}</Text>
+                                <Text style={styles.subject} >{item.subject}</Text>
+                            </View>
+                            <View style={styles.time}>
+                                <Text style={styles.timeText} >14h</Text>
                             </View>
                         </View>
-                        
-                    /*s
-                    <ListItem
-                        roundAvatar
-                        title={item.subject}
-                        subtitle={
-                        <View>
-                            <Text style={styles.sentby}>{item.sentBy}</Text>
-                        </View>
-                        }
-                        //avatar={require('../images/avatar1.jpg')}
-                        />
-                        */
                     )
                 }
                 keyExtractor={item => item.subject+item.sentby+item.sentDate}
@@ -101,10 +115,12 @@ export default class App extends Component<Props> {
     }
 }
 
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#FFFFFF',
     },
     listItem: {
         flex:1,
@@ -119,17 +135,26 @@ const styles = StyleSheet.create({
         margin: 10,
     },
     subject: {
-        fontSize: 13,
+        fontSize: 12,
         textAlign: 'left',
         marginLeft: 10,
         marginRight: 10,
     },
     sentby: {
-        fontSize: 10,
+        fontSize: 17,
         textAlign: 'left',
         marginLeft: 10,
         marginRight: 10,
-        },
+    },
+    time: {
+        flexDirection: 'column',
+        justifyContent: 'flex-start',  
+        marginRight: 3,
+        marginTop:3
+    },
+    timeText:{
+        fontSize: 10,
+    },
     instructions: {
         textAlign: 'center',
         color: '#333333',
