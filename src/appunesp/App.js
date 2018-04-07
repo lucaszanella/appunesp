@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 //const Realm         = require('realm');
 //const realm         = new Realm(SisgradSchemas);
-const Sisgrad       = new SisgradCrawler(username, password);
+const Sisgrad = new SisgradCrawler(username, password);
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -65,7 +65,8 @@ export default class App extends Component<Props> {
                 data={this.state.data}
                 renderItem={
                     ({item}) => (
-                        <View style={{flex: 1, flexDirection: 'row'}}>
+                        <View style={styles.listItem}>
+                            
                             <Avatar
                                 medium
                                 rounded
@@ -103,9 +104,14 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: '#F5FCFF',
+    },
+    listItem: {
+        flex:1,
+        flexDirection: 'row',
+        marginLeft:5,
+        marginRight:5,
+        marginBottom:7,
     },
     welcome: {
         fontSize: 20,

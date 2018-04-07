@@ -19,16 +19,16 @@ export default class UserInput extends Component {
           placeholderTextColor="white"
           underlineColorAndroid="transparent"
         />
-            {this.props.secureTextEntry ? (
-              <TouchableOpacity
-                activeOpacity={0.7}
-                style={styles.btnEye}
-                onPress={()=>null}>
-                <Image source={eyeImg} style={styles.iconEye} />
-              </TouchableOpacity>
-            ) : (
-              null
-            )}
+        {this.props.secureTextEntry ? (
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={styles.btnEye}
+            onPress={()=>null}>
+            <Image source={eyeImg} style={styles.iconEye} />
+          </TouchableOpacity>
+        ) : (
+          null
+        )}
       </View>
     );
   }
@@ -39,10 +39,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
     borderRadius: 20,
     color: '#ffffff',
+    paddingLeft: 35,
   },
   btnEye: {
     position: "absolute",
-    right: 30
+    right: 8,
   },
   iconEye: {
     width: 25,
@@ -59,6 +60,6 @@ const styles = StyleSheet.create({
     zIndex: 99,
     width: 22,
     height: 22,
-    left: 35,
+    left: 8,
   },
 });

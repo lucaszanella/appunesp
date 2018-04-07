@@ -35,7 +35,7 @@ export default class Form extends Component {
 
   render() {
     return (
-      <KeyboardAvoidingView behavior="padding" style={styles.container}>
+      <View style={this.props.style}>
         <UserInput
           style={styles.textInput}
           source={usernameImg}
@@ -53,23 +53,16 @@ export default class Form extends Component {
           autoCapitalize={'none'}
           autoCorrect={false}
         />
-      </KeyboardAvoidingView>
+        <ButtonSubmit placeholder="LOGIN"/>
+
+      </View>
     );
   }
 }
 
-const DEVICE_WIDTH = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 2,
-    //alignItems: 'center',
-  },
   textInput: {
-    width: DEVICE_WIDTH - 40,
+    flex:1,
     height: 50,
-    marginHorizontal: 20,
-    paddingLeft: 45,
   },
 });
