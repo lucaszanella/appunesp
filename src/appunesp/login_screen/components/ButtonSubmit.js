@@ -31,7 +31,25 @@ export default class ButtonSubmit extends Component {
   }
 
   _onPress() {
- 
+    if (this.state.isLoading) return;
+
+    this.setState({isLoading: true});
+    Animated.timing(this.buttonAnimated, {
+      toValue: 1,
+      duration: 200,
+      easing: Easing.linear,
+    }).start();
+
+    setTimeout(() => {
+      this._onGrow();
+    }, 2000);
+
+    setTimeout(() => {
+      //Actions.secondScreen();
+      this.setState({isLoading: false});
+      this.buttonAnimated.setValue(0);
+      this.growAnimated.setValue(0);
+    }, 2300);
   }
 
   _onGrow() {
@@ -97,7 +115,7 @@ const styles = StyleSheet.create({
     width: MARGIN,
     marginTop: -MARGIN,
     borderWidth: 1,
-    borderColor: '#66b3ff',
+    borderColor: '#99ccff',
     borderRadius: 100,
     alignSelf: 'center',
     zIndex: 99,

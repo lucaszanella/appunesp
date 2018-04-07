@@ -240,8 +240,8 @@ export class SisgradCrawler {
 
             for (emptyMessage of emptyMessages) {
                 console.log('going to read message ' + emptyMessage.sisgradId);
-                message =  this.readMessage(emptyMessage.sisgradId);
-                queue.push(message);
+                m = this.readMessage(emptyMessage.sisgradId);
+                queue.push(m);
             }
 
             for (message of queue) {

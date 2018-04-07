@@ -37,6 +37,7 @@ export default class Form extends Component {
     return (
       <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <UserInput
+          style={styles.textInput}
           source={usernameImg}
           placeholder="e-mail"
           autoCapitalize={'none'}
@@ -44,6 +45,7 @@ export default class Form extends Component {
           autoCorrect={false}
         />
         <UserInput
+          style={styles.textInput}
           source={passwordImg}
           secureTextEntry={this.state.showPass}
           placeholder="senha"
@@ -51,12 +53,6 @@ export default class Form extends Component {
           autoCapitalize={'none'}
           autoCorrect={false}
         />
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.btnEye}
-          onPress={this.showPass}>
-          <Image source={eyeImg} style={styles.iconEye} />
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     );
   }
@@ -67,17 +63,13 @@ const DEVICE_HEIGHT = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
+    flex: 2,
+    //alignItems: 'center',
   },
-  btnEye: {
-    position: 'absolute',
-    top: 60,
-    right: 28,
-  },
-  iconEye: {
-    width: 25,
-    height: 25,
-    tintColor: 'rgba(0,0,0,0.2)',
+  textInput: {
+    width: DEVICE_WIDTH - 40,
+    height: 50,
+    marginHorizontal: 20,
+    paddingLeft: 45,
   },
 });
