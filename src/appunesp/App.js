@@ -10,8 +10,17 @@ import {
     FlatList,
 } from 'react-native';
 const md5 = require("blueimp-md5");
+
 dateRegex = /(\d{4})-(\d+)-(\d+)\s(\d+):(\d+):(\d+)/;
 
+parseDate = dateString => {
+    x = dateRegex.exec(dateString);
+    
+    if (date.getFullYear() != parseInt(x[1]))
+        return x[2] + "/" + x[1]; 
+    
+    return x[3] + "/" + x[2];
+}
 const date = new Date();
 //const Realm         = require('realm');
 //const realm         = new Realm(SisgradSchemas);
@@ -71,6 +80,27 @@ export default class App extends Component<Props> {
         );
     };
 
+    renderItem = ({item}) => (
+        <View style={styles.listItem}>
+            <Avatar
+                medium
+                rounded
+                title={this.initials(item.sentBy)}
+                overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
+                onPress={() => console.log("Works!")}
+                activeOpacity={0.7}
+            />
+            <View style={{flex: 9, flexDirection: 'column'}}>
+                <Text style={styles.sentby}  numberOfLines={1}>{item.sentBy}</Text>
+                <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
+                <Text style={styles.message} numberOfLines={1}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+            </View>
+            <View style={styles.time}>
+                <Text style={styles.timeText}>{parseDate(item.sentDate)}</Text>
+            </View>
+        </View>
+    )
+
     initials = name => {
         x = name.split(" ", 2);
         if (x.length>=2)
@@ -78,18 +108,8 @@ export default class App extends Component<Props> {
         else if (x.length==1)
           return x[0][0]
         else 
-          return "__";
-      };
-    
-    parseDate = dateString => {
-        x = dateRegex.exec(dateString);
-        
-        if (date.getFullYear() != parseInt(x[1]))
-            return x[3] + "/" + x[2] + "/" + x[1]; 
-        
-        return x[3] + "/" + x[2];
-
-    }
+          return "XX";
+    };
 
     render() {
         return (
@@ -100,30 +120,7 @@ export default class App extends Component<Props> {
                 <FlatList
                 data={this.state.data}
                 ItemSeparatorComponent={this.renderSeparator}
-                renderItem={
-                    ({item}) => (
-                        <View style={styles.listItem}>
-                            
-                            <Avatar
-                                medium
-                                rounded
-                                title={this.initials(item.sentBy)}
-                                overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
-                                onPress={() => console.log("Works!")}
-                                activeOpacity={0.7}
-                                />
-                            <View style={{flex: 9, flexDirection: 'column'}}>
-                                <Text style={styles.sentby} numberOfLines={1}>{item.sentBy}</Text>
-                                <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
-                                <Text style={styles.message} numberOfLines={1}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-
-                            </View>
-                            <View style={styles.time}>
-                                <Text style={styles.timeText}>{this.parseDate(item.sentDate)}</Text>
-                            </View>
-                        </View>
-                    )
-                }
+                renderItem={this.renderItem}
                 keyExtractor={item => item.subject+item.sentby+item.sentDate}
                 />
             </View>
@@ -151,7 +148,6 @@ const randomColors = {
     e: "#C51162",
     f: "#E0F2F1",
 }
-
 
 const styles = StyleSheet.create({
     container: {
