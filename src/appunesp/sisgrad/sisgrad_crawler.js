@@ -164,10 +164,10 @@ export class SisgradCrawler {
                 doc = {
                     favorite       : clean($(table[0][i]).text()),
                     hasAttachment  : clean($(table[1][i]).text()),
-                    sentBy         : clean(table[2][i])          ,
+                    sentBy         : clean(table[2][i]),
                     subject        : clean($(table[3][i]).text()),
-                    sentDate       : clean(table[4][i])          ,
-                    readDate       : clean(table[5][i])          ,
+                    sentDate       : clean(table[4][i]),
+                    readDate       : clean(table[5][i]),
                     sisgradId      : /VisualizarMensagem\('(\d+)'\)/.exec($('a', table[3][i]).attr('href'))[1]                ,
                 }
                 data.push(doc)
@@ -175,7 +175,6 @@ export class SisgradCrawler {
         }
         console.log(data);
         data.map(this.recordMessage); //TODO: slow down recording, too many in async mode
-        
         return data;
     }
 
@@ -205,7 +204,7 @@ export class SisgradCrawler {
             subject    : subject,
             message    : message,
             attachments: attachments,
-            sentDate   : sentDate   
+            sentDate   : sentDate
         }
     }
  

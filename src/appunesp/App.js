@@ -9,6 +9,10 @@ import {
     View,
     FlatList,
 } from 'react-native';
+const md5 = require("blueimp-md5");
+dateRegex = /(\d{4})-(\d+)-(\d+)\s(\d+):(\d+):(\d+)/;
+
+const date = new Date();
 //const Realm         = require('realm');
 //const realm         = new Realm(SisgradSchemas);
 const Sisgrad = new SisgradCrawler(username, password);
@@ -52,7 +56,7 @@ export default class App extends Component<Props> {
                 Sisgrad.recordMessage(message);
         }
         readMessages = () => Sisgrad.readMessages().then(writeMessages);
-        //Sisgrad.performLogin().then(readMessages).then(updateMessages);
+        //Sisgrad.performLogin().then(readMessages).then();
     }
 
     renderSeparator = () => {
@@ -60,9 +64,8 @@ export default class App extends Component<Props> {
           <View
             style={{
               height: 1,
-              width: "86%",
+              width: "100%",
               backgroundColor: "#CED0CE",
-              marginLeft: "14%"
             }}
           />
         );
@@ -78,6 +81,16 @@ export default class App extends Component<Props> {
           return "__";
       };
     
+    parseDate = dateString => {
+        x = dateRegex.exec(dateString);
+        
+        if (date.getFullYear() != parseInt(x[1]))
+            return x[3] + "/" + x[2] + "/" + x[1]; 
+        
+        return x[3] + "/" + x[2];
+
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -95,15 +108,18 @@ export default class App extends Component<Props> {
                                 medium
                                 rounded
                                 title={this.initials(item.sentBy)}
+                                overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
                                 onPress={() => console.log("Works!")}
                                 activeOpacity={0.7}
                                 />
                             <View style={{flex: 9, flexDirection: 'column'}}>
-                                <Text style={styles.sentby} >{item.sentBy}</Text>
-                                <Text style={styles.subject} >{item.subject}</Text>
+                                <Text style={styles.sentby} numberOfLines={1}>{item.sentBy}</Text>
+                                <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
+                                <Text style={styles.message} numberOfLines={1}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+
                             </View>
                             <View style={styles.time}>
-                                <Text style={styles.timeText} >14h</Text>
+                                <Text style={styles.timeText}>{this.parseDate(item.sentDate)}</Text>
                             </View>
                         </View>
                     )
@@ -115,6 +131,26 @@ export default class App extends Component<Props> {
     }
 }
 
+randomColorPicker = string => randomColors[md5(string)[0]]; //TODO: update color picker function to be more light
+
+const randomColors = {
+    0: "#EF5350",
+    1: "#EC407A",
+    2: "#4A148C",
+    3: "#7986CB",
+    4: "#512DA8",
+    5: "#009688",
+    6: "#81C784",
+    7: "#DCE775",
+    8: "#FFA000",
+    9: "#A1887F",
+    a: "#FF8A65",
+    b: "#B0BEC5",
+    c: "#00B0FF",
+    d: "#D1C4E9",
+    e: "#C51162",
+    f: "#E0F2F1",
+}
 
 
 const styles = StyleSheet.create({
@@ -128,6 +164,7 @@ const styles = StyleSheet.create({
         marginLeft:5,
         marginRight:5,
         marginBottom:7,
+        marginTop: 3
     },
     welcome: {
         fontSize: 20,
@@ -139,12 +176,26 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         marginLeft: 10,
         marginRight: 10,
+        fontWeight: '600'
+
     },
     sentby: {
         fontSize: 17,
         textAlign: 'left',
         marginLeft: 10,
         marginRight: 10,
+        fontWeight: '600'
+
+       // color: 'rgba(255, 255, 255, 0.7)'
+    },
+    message: {
+        fontSize: 12,
+        textAlign: 'left',
+        marginLeft: 10,
+        marginRight: 10,
+        fontWeight: '400'
+
+       // color: 'rgba(255, 255, 255, 0.7)'
     },
     time: {
         flexDirection: 'column',

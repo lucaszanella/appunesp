@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { KeyboardAvoidingView, StyleSheet, ImageBackground } from 'react-native';
+import { View, KeyboardAvoidingView, StyleSheet, ImageBackground } from 'react-native';
 import Logo from './login_screen/components/Logo';
 import Form from './login_screen/components/Form';
 import Wallpaper from './login_screen/components/Wallpaper';
@@ -17,7 +17,7 @@ export default class LoginScreen extends Component {
       <ImageBackground style={styles.picture} source={bgSrc}>
         <KeyboardAvoidingView style={{flex:1, flexDirection: "column"}} behavior="padding">
            <Logo/>
-           <Form style={{flex:7, marginLeft: 10, marginRight:10}}/>
+           <Form style={{flex:4, flexDirection: "column", marginLeft: 10, marginRight:10}}/>
            <SignupSection/>
         </KeyboardAvoidingView>
       </ImageBackground>
