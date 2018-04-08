@@ -1,6 +1,6 @@
 import Form from './components/Form';
 import Logo from './components/Logo';
 import Wallpaper from './components/Wallpaper';
-import SignupSection from './components/SignupSection';
+import Footer from './components/Footer';
 
-export { Form, Logo, Wallpaper, SignupSection }
+export { Form, Logo, Wallpaper, Footer }

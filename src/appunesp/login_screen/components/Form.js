@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import Dimensions from 'Dimensions';
 import {
   StyleSheet,
   KeyboardAvoidingView,
@@ -10,9 +9,7 @@ import {
 } from 'react-native';
 
 import UserInput from './UserInput';
-import ButtonSubmit from './ButtonSubmit';
 import ButtonSubmit2 from './ButtonSubmit2';
-import SignupSection from './SignupSection';
 
 import usernameImg from '../images/username.png';
 import passwordImg from '../images/password.png';

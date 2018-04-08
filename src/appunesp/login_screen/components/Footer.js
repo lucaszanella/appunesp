@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
-import Dimensions from 'Dimensions';
 import {StyleSheet, View, Text} from 'react-native';
 
 export default class SignupSection extends Component {
   render() {
     return (
       <View style={{...StyleSheet.flatten(styles.container), ...this.props.style ? StyleSheet.flatten(this.props.style) : {} }}>
-        <Text style={styles.text}>Create Account</Text>
-        <Text style={styles.text}>Forgot Password?</Text>
+        <Text style={styles.text}>Usar Sem Sisgrad</Text>
+        <Text style={styles.text}>Esqueci Minha Senha</Text>
+
       </View>
     );
   }
