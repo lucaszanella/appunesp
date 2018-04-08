@@ -1,28 +1,25 @@
 import React, { Component } from 'react';
-import { View, KeyboardAvoidingView, StyleSheet, ImageBackground } from 'react-native';
-import Logo from './login_screen/components/Logo';
-import Form from './login_screen/components/Form';
-import Wallpaper from './login_screen/components/Wallpaper';
-import ButtonSubmit from './login_screen/components/ButtonSubmit';
-import SignupSection from './login_screen/components/SignupSection';
+import { View, KeyboardAvoidingView, StyleSheet, ImageBackground, Image } from 'react-native';
+import { Form, Logo, Wallpaper, SignupSection } from './login_screen';
 import Dimensions from 'Dimensions';
 import bgSrc from './login_screen/images/wallpaper2.jpeg';
 
-const W = Dimensions.get('window').width;
-const H = Dimensions.get('window').height;
 
 export default class LoginScreen extends Component {
   render() {
     return (
-      <ImageBackground style={styles.picture} source={bgSrc}>
+      <ImageBackground style={styles.background} source={bgSrc}>
         <KeyboardAvoidingView style={{flex:1, flexDirection: "column"}} behavior="padding">
-           <Logo/>
-           <Form style={{flex:4,
+          <Logo style={{flex: 6,
+                        alignItems: 'center',
+                        justifyContent: 'center',}}>
+          </Logo>
+          <Form style={{flex:4,
                          flexDirection: "column", 
                          alignSelf:"flex-start",
                          marginLeft: 10, 
                          marginRight:10}}/>
-           <SignupSection/>
+          <SignupSection style={{flex:1}}/>
         </KeyboardAvoidingView>
       </ImageBackground>
     );
@@ -30,11 +27,15 @@ export default class LoginScreen extends Component {
 }
 
 const styles = StyleSheet.create({
-  picture: {
+  background: {
     flex: 1,
     width: null,
     height: null,
     //resizeMode: 'cover',
+  },
+  logoImage: {
+    width: 150,
+    height: 140,
   },
 });
 

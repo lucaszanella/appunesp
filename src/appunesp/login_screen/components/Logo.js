@@ -6,7 +6,7 @@ import logoImg from '../images/unesp-logo2.png';
 export default class Logo extends Component {
   render() {
     return (
-      <View style={styles.container}>
+      <View style={{...StyleSheet.flatten(styles.container), ...this.props.style ? StyleSheet.flatten(this.props.style) : {} }}>
         <Image source={logoImg} style={styles.image} />
       </View>
     );
@@ -22,11 +22,5 @@ const styles = StyleSheet.create({
   image: {
     width: 150,
     height: 140,
-  },
-  text: {
-    color: 'white',
-    fontWeight: 'bold',
-    backgroundColor: 'transparent',
-    marginTop: 20,
   },
 });
