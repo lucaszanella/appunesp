@@ -13,8 +13,6 @@ import {
 
 import spinner from '../images/loading.gif';
 
-const DEVICE_WIDTH  = Dimensions.get('window').width;
-const DEVICE_HEIGHT = Dimensions.get('window').height;
 const MARGIN = 40;
 
 export default class ButtonSubmit extends Component {
@@ -23,9 +21,10 @@ export default class ButtonSubmit extends Component {
 
     this.state = {
       isLoading: false,
+      buttonW: 1
     };
 
-    this.buttonAnimated = new Animated.Value(0);
+    this.buttonAnimated = new Animated.Value(1);
     this.growAnimated = new Animated.Value(0);
     this._onPress = this._onPress.bind(this);
   }
@@ -34,11 +33,21 @@ export default class ButtonSubmit extends Component {
     if (this.state.isLoading) return;
 
     this.setState({isLoading: true});
+    /*
     Animated.timing(this.buttonAnimated, {
-      toValue: 1,
+      toValue: 0,
       duration: 200,
       easing: Easing.linear,
     }).start();
+    */
+    Animated.timing(                    // Animate over time
+      this.state.buttonW,             // The animated value to drive, this would be a new Animated.Value(0) object.
+      {
+        toValue: 0,                   // Animate the value
+        duration: 200,                 // Make it take a while
+        easing: Easing.linear,
+      }
+    ).start();
 
     setTimeout(() => {
       this._onGrow();
@@ -47,7 +56,7 @@ export default class ButtonSubmit extends Component {
     setTimeout(() => {
       //Actions.secondScreen();
       this.setState({isLoading: false});
-      this.buttonAnimated.setValue(0);
+      this.buttonAnimated.setValue(1);
       this.growAnimated.setValue(0);
     }, 2300);
   }
@@ -63,7 +72,7 @@ export default class ButtonSubmit extends Component {
   render() {
     const changeWidth = this.buttonAnimated.interpolate({
       inputRange: [0, 1],
-      outputRange: [DEVICE_WIDTH - MARGIN, MARGIN],
+      outputRange: [this.state.W, MARGIN],
     });
     const changeScale = this.growAnimated.interpolate({
       inputRange: [0, 1],
@@ -72,7 +81,11 @@ export default class ButtonSubmit extends Component {
 
     return (
       <View style={styles.container}>
-        <Animated.View style={{width: changeWidth}}>
+        <Animated.View style={[{
+            transform: [
+              { scaleX: this.state.buttonW } // this would be the result of the animation code below and is just a number.
+            ]
+          }]}>
           <TouchableOpacity
             style={styles.button}
             onPress={this._onPress}
@@ -97,9 +110,9 @@ export default class ButtonSubmit extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    width:"100%",
+    flexDirection: "row",
+    alignItems:'center' 
   },
   button: {
     alignItems: 'center',

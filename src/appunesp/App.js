@@ -40,7 +40,7 @@ export default class App extends Component<Props> {
             refreshing: false,
             realm: null,
             messages: null
-        };
+        }
     }
 
     componentWillMount() {
@@ -78,7 +78,7 @@ export default class App extends Component<Props> {
             }}
           />
         );
-    };
+    }
 
     renderItem = ({item}) => (
         <View style={styles.listItem}>
@@ -109,7 +109,7 @@ export default class App extends Component<Props> {
           return x[0][0]
         else 
           return "XX";
-    };
+    }
 
     render() {
         return (

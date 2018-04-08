@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     tintColor: 'rgba(0,0,0,0.2)',
   },
   inputWrapper: {
-    flex: 1,
+    width:"100%",
     flexDirection: "row",
     alignItems:'center' 
   },
