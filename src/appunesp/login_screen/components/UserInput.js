@@ -6,30 +6,30 @@ import eyeImg from '../images/eye_black.png';
 export default class UserInput extends Component {
   render() {
     return (
-      <View style={styles.inputWrapper}>
-        <Image source={this.props.source} style={styles.inlineImg} />
-        <TextInput
-          //style={styles.input}
-          style={mergeObjects(this.props.style ? StyleSheet.flatten(this.props.style) : {}, StyleSheet.flatten(styles.input))}
-          placeholder={this.props.placeholder}
-          secureTextEntry={this.props.secureTextEntry}
-          autoCorrect={this.props.autoCorrect}
-          autoCapitalize={this.props.autoCapitalize}
-          returnKeyType={this.props.returnKeyType}
-          placeholderTextColor="white"
-          underlineColorAndroid="transparent"
-        />
-        {this.props.secureTextEntry ? (
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.btnEye}
-            onPress={()=>null}>
-            <Image source={eyeImg} style={styles.iconEye} />
-          </TouchableOpacity>
-        ) : (
-          null
-        )}
-      </View>
+      <View style={mergeObjects(this.props.containerStyle ? StyleSheet.flatten(this.props.containerStyle) : {}, StyleSheet.flatten(styles.inputWrapper))}>
+      <Image source={this.props.source} style={styles.inlineImg} />
+      <TextInput
+        //style={styles.input}
+        style={mergeObjects(this.props.style ? StyleSheet.flatten(this.props.style) : {}, StyleSheet.flatten(styles.input))}
+        placeholder={this.props.placeholder}
+        secureTextEntry={this.props.secureTextEntry}
+        autoCorrect={this.props.autoCorrect}
+        autoCapitalize={this.props.autoCapitalize}
+        returnKeyType={this.props.returnKeyType}
+        placeholderTextColor="white"
+        underlineColorAndroid="transparent"
+      />
+      {this.props.secureTextEntry ? (
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.btnEye}
+          onPress={()=>null}>
+          <Image source={eyeImg} style={styles.iconEye} />
+        </TouchableOpacity>
+      ) : (
+        null
+      )}
+    </View>
     );
   }
 }

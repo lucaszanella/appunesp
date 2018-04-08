@@ -24,7 +24,6 @@ export default class ButtonSubmit extends Component {
       buttonW: 1
     };
 
-    this.buttonAnimated = new Animated.Value(1);
     this.growAnimated = new Animated.Value(0);
     this._onPress = this._onPress.bind(this);
   }
@@ -54,9 +53,7 @@ export default class ButtonSubmit extends Component {
     }, 2000);
 
     setTimeout(() => {
-      //Actions.secondScreen();
       this.setState({isLoading: false});
-      this.buttonAnimated.setValue(1);
       this.growAnimated.setValue(0);
     }, 2300);
   }
@@ -70,10 +67,6 @@ export default class ButtonSubmit extends Component {
   }
 
   render() {
-    const changeWidth = this.buttonAnimated.interpolate({
-      inputRange: [0, 1],
-      outputRange: [this.state.W, MARGIN],
-    });
     const changeScale = this.growAnimated.interpolate({
       inputRange: [0, 1],
       outputRange: [1, MARGIN],
@@ -110,7 +103,7 @@ export default class ButtonSubmit extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    width:"100%",
+    width:400,
     flexDirection: "row",
     alignItems:'center' 
   },

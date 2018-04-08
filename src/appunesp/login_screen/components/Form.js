@@ -11,6 +11,7 @@ import {
 
 import UserInput from './UserInput';
 import ButtonSubmit from './ButtonSubmit';
+import ButtonSubmit2 from './ButtonSubmit2';
 import SignupSection from './SignupSection';
 
 import usernameImg from '../images/username.png';
@@ -37,6 +38,7 @@ export default class Form extends Component {
     return (
       <View style={this.props.style}>
         <UserInput
+          containerStyle={styles.textInputContainer}
           style={styles.textInput}
           source={usernameImg}
           placeholder="e-mail"
@@ -45,6 +47,7 @@ export default class Form extends Component {
           autoCorrect={false}
         />
         <UserInput
+          containerStyle={styles.textInputContainer}
           style={styles.textInput}
           source={passwordImg}
           secureTextEntry={this.state.showPass}
@@ -53,7 +56,7 @@ export default class Form extends Component {
           autoCapitalize={'none'}
           autoCorrect={false}
         />
-        <ButtonSubmit placeholder="LOGIN"/>
+        <ButtonSubmit2 placeholder="LOGIN"/>
 
       </View>
     );
@@ -61,6 +64,9 @@ export default class Form extends Component {
 }
 
 const styles = StyleSheet.create({
+  textInputContainer : {
+        marginBottom: 20
+  },
   textInput: {
     flex:1,
     height: 50,
