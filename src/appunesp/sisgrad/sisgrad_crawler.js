@@ -229,12 +229,15 @@ export class SisgradCrawler {
     }
 
     updateMessages = async function() {
-        record  = (m) => () => {
-            message.id      = m.id;
-            message.message = m.message;          
+        update  = (realm, m) => () => {
+            messages = realm.objects(messagesTable).filtered(`id = "${m.id}"`);
+            for (message of messages) {
+                message.id      = m.id;
+                message.message = m.message;
+            }
         }
 
-        while (emptyMessages = realm.objects(messagesTable).filtered('message = ""').slice(0,5)) {
+        while (emptyMessages = realm.objects(messagesTable).filtered('message = \"\"').slice(0,5)) {
             queue = [];
 
             for (emptyMessage of emptyMessages) {
@@ -247,8 +250,14 @@ export class SisgradCrawler {
             console.log('entering queue');
             for (m of queue) {
                 const message = await m;
+                console.log('message:')
                 console.log(message);
-                realm.write(record(message));
+                realm.write(update(realm, message));
+                console.log('message recorded:');
+                b = realm.objects(messagesTable).filtered(`id = "${message.id}"`)
+                for (a of b) {
+                    console.log(b);
+                }
             }
         }
     }

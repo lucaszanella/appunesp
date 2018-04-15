@@ -6,7 +6,7 @@ const cheerioTableparser = require('cheerio-tableparser');
 export const pathIsFromUrl = (path, url) => RegExp(path + '\/?$').test(url); //Tests if path is in URL up to the last character, possibly ending with /
 
 //const cheerio = require("cheerio");
-    
+/*
 // fetch logger
 global._fetch = fetch;
 global.fetch = function (uri, options, ...args) {
@@ -15,7 +15,7 @@ global.fetch = function (uri, options, ...args) {
     return response;
     });
 };
-    
+*/  
 export async function crawl(path = undefined, 
                             options) {
     headers = {};
