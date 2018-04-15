@@ -65,7 +65,9 @@ export default class App extends Component<Props> {
                 Sisgrad.recordMessage(message);
         }
         readMessages = () => Sisgrad.readMessages().then(writeMessages);
-        //Sisgrad.performLogin().then(readMessages).then();
+        Sisgrad.performLogin().
+        //then(readMessages).
+        then(updateMessages);
     }
 
     renderSeparator = () => {

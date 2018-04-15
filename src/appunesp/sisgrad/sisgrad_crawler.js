@@ -141,9 +141,9 @@ export class SisgradCrawler {
 
         r = await this.crawl(paths.login_action.url,
                             { 
-                             postData      : post, 
-                             expectUrl     : paths.login_form_redirected.path,
-                             redirectLogin : false
+                                postData      : post, 
+                                expectUrl     : paths.login_form_redirected.path,
+                                redirectLogin : false
                             });
         return true;
 
@@ -190,8 +190,8 @@ export class SisgradCrawler {
         attachments = attachments.map(x => $(x));
         attachments = attachments.map(x => (
                 {
-                link : x.attr('href'), 
-                title: clean(x.text())
+                    link : x.attr('href'), 
+                    title: clean(x.text())
                 }
         ));
         sender   = table[1][1];
@@ -229,9 +229,9 @@ export class SisgradCrawler {
     }
 
     updateMessages = async function() {
-        record  = (message, id) => () => {
-            message.id = id;
-            message.message = message;          
+        record  = (m) => () => {
+            message.id      = m.id;
+            message.message = m.message;          
         }
 
         while (emptyMessages = realm.objects(messagesTable).filtered('message = ""').slice(0,5)) {
@@ -240,15 +240,15 @@ export class SisgradCrawler {
             for (emptyMessage of emptyMessages) {
                 console.log('going to read message ' + emptyMessage.sisgradId);
                 m = this.readMessage(emptyMessage.sisgradId);
+                //console.log('pushing')
+                //console.log(m)
                 queue.push(m);
             }
-
-            for (message of queue) {
-                await message;
-                console.log(message.message);
-                console.log(message.id);
+            console.log('entering queue');
+            for (m of queue) {
+                const message = await m;
                 console.log(message);
-                realm.write(record(message, message.id));
+                realm.write(record(message));
             }
         }
     }
