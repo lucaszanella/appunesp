@@ -9,8 +9,7 @@ export default class LoginScreen extends Component {
     return (
       <ImageBackground style={styles.background} source={bgSrc}>
         <KeyboardAvoidingView style={{flex:1, flexDirection: "column"}} behavior="padding">
-          <Logo style={{flex: 6,}}>
-          </Logo>
+          <Logo style={{flex: 6,}}/>
           <Form style={{flex:4,
                          flexDirection: "column", 
                          alignSelf:"flex-start",
