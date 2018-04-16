@@ -9,7 +9,7 @@ services:
     image: appunespdev
     stdin_open: true
     tty: true
-    #entrypoint: /my_entrypoint.sh
+    #entrypoint: /bin/bash npm start & /bin/bash
     network_mode: "host"
     privileged: false
     volumes:

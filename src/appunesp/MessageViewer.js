@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar } from 'react-native-elements';
 import randomColorPicker from './utils/randomColorPicker'
 import parseDate from './utils/parseDate'
 import initials from './utils/initials'
 
-
 item = {
     subject: 'Mensagem aos alunos inscritos no ENADE 2017 - Concluintes ',
     sentBy: 'Geraldo Forti Pereira da Silva',
+    sentDate: '22/11/2017 às 15:52',
     message: `    De acordo com Edital INEP, os portões para adentrar no local da prova serão abertos às 12 horas e fechados às 13 horas.
 
     Lembramos que o estudante inscrito no ENADE 2017 deverá realizar o primeiro acesso em: http://enade.inep.gov.br/enade/#!/cadastrarEstudante
@@ -41,8 +41,17 @@ item = {
 export default class MessageViewer extends Component {
   render() {
     return (
-      <View style={{flex:1}}>
-        <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
+      <ScrollView style={{}}>
+        <View style={styles.bigSubject}>
+            <Text style={styles.subject}>{item.subject}</Text>
+            <View
+                style={{
+                height: 1,
+                width: "100%",
+                backgroundColor: "#CED0CE",
+                }}
+            />
+        </View>
         <View style={styles.listItem}>
             <Avatar
                 medium
@@ -53,16 +62,19 @@ export default class MessageViewer extends Component {
                 activeOpacity={0.7}
             />
             <View style={{flex: 9, flexDirection: 'column'}}>
-                <Text style={styles.sentby}  numberOfLines={1}>{item.sentBy}</Text>
+                <Text style={styles.sentby}>{item.sentBy}</Text>
+                <Text style={styles.toMe}>para: mim</Text>
+                <Text style={styles.toMe}>{item.sentDate}</Text>
+
             </View>
             <View style={styles.time}>
                 <Text style={styles.timeText}></Text>
             </View>
         </View>
         <View style={styles.messageContainer}>
-            <Text style={styles.message}>{item.message}</Text>
+            <Text style={styles.message} selectable={true}>{item.message}</Text>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -73,7 +85,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#FFFFFF',
   },
   listItem: {
-      flex:2,
+      //flex:2,
       flexDirection: 'row',
       marginLeft:5,
       marginRight:5,
@@ -86,16 +98,21 @@ const styles = StyleSheet.create({
       margin: 10,
   },
   subject: {
-      flex:1,
-      fontSize: 12,
+      //flex:1,
+      fontSize: 16,
       textAlign: 'left',
       marginLeft: 10,
       marginRight: 10,
+      marginBottom:10,
       fontWeight: '600'
 
   },
+  bigSubject: {
+    marginTop: 10,
+    marginBottom: 10,
+},
   sentby: {
-      fontSize: 17,
+      fontSize: 14,
       textAlign: 'left',
       marginLeft: 10,
       marginRight: 10,
@@ -103,17 +120,25 @@ const styles = StyleSheet.create({
 
      // color: 'rgba(255, 255, 255, 0.7)'
   },
+  toMe: {
+    fontSize: 14,
+    textAlign: 'left',
+    marginLeft: 10,
+    marginRight: 10,
+    fontWeight: '400'
+
+   // color: 'rgba(255, 255, 255, 0.7)'
+},
   message: {
       fontSize: 12,
       textAlign: 'left',
       marginLeft: 10,
       marginRight: 10,
-      fontWeight: '400'
 
      // color: 'rgba(255, 255, 255, 0.7)'
   },
   messageContainer: {
-    flex:20
+   // flex:20
    // color: 'rgba(255, 255, 255, 0.7)'
 },
   time: {
