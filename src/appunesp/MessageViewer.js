@@ -4,6 +4,8 @@ import { Avatar } from 'react-native-elements';
 import randomColorPicker from './utils/randomColorPicker'
 import parseDate from './utils/parseDate'
 import initials from './utils/initials'
+import linkToHref from './utils/linkToHref'
+import HTMLView from 'react-native-htmlview';
 
 item = {
     subject: 'Mensagem aos alunos inscritos no ENADE 2017 - Concluintes ',
@@ -27,6 +29,8 @@ item = {
     
     O acesso ao Sistema do ENADE é feito pelo link http://enade.inep.gov.br/enade/#!/index.
     
+    Teste exemplo de texto <a href='http://mec.cube.call.inf.br/auth-web/login?redirect_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fauth%2Fcallback&requested_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fsecoes%2F&token_aplicacao=e3lhqm5iVYbcOEfxMMvpBw#/0'>    http://mec.cube.call.inf.br/auth-web/login?redirect_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fauth%2Fcallback&requested_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fsecoes%2F&token_aplicacao=e3lhqm5iVYbcOEfxMMvpBw#/0</a> continuação do texto
+
     Em caso de problema com o acesso, favor entrar em contato com o INEP:
     http://mec.cube.call.inf.br/auth-web/login?redirect_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fauth%2Fcallback&requested_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fsecoes%2F&token_aplicacao=e3lhqm5iVYbcOEfxMMvpBw#/0
     
@@ -71,13 +75,24 @@ export default class MessageViewer extends Component {
                 <Text style={styles.timeText}></Text>
             </View>
         </View>
-        <View style={styles.messageContainer}>
-            <Text style={styles.message} selectable={true}>{item.message}</Text>
-        </View>
+        <HTMLView
+            value={linkToHref(item.message)}
+            style={styles.message}
+            textComponentProps={{selectable: true}}
+            stylesheet={{a: {
+                fontWeight: '300',
+                color: '#FF3366', // make links coloured pink
+              }}}
+        />
       </ScrollView>
     );
   }
 }
+/*
+        <View style={styles.messageContainer}>
+            <Text style={styles.message} selectable={true}>{item.message}</Text>
+        </View>
+*/
 
 const styles = StyleSheet.create({
   container: {
@@ -130,10 +145,11 @@ const styles = StyleSheet.create({
    // color: 'rgba(255, 255, 255, 0.7)'
 },
   message: {
-      fontSize: 12,
-      textAlign: 'left',
+      //fontSize: 12,
+      //textAlign: 'left',
       marginLeft: 10,
       marginRight: 10,
+      marginBottom: 10,
 
      // color: 'rgba(255, 255, 255, 0.7)'
   },
