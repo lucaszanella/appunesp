@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, ScrollView } from 'react-native';
 import { Avatar } from 'react-native-elements';
+import realm, {messagesTable} from './realm';
 import randomColorPicker from './utils/randomColorPicker'
 import parseDate from './utils/parseDate'
 import initials from './utils/initials'
@@ -43,9 +44,19 @@ item = {
 }
 
 export default class MessageViewer extends Component {
+    static navigationOptions = {
+        title: 'Mensagem',
+        headerStyle: {
+            backgroundColor: '#3F51B5',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+    };
   render() {
     return (
-      <ScrollView style={{}}>
+      <ScrollView style={{backgroundColor: "#FFFFFF",}}>
         <View style={styles.bigSubject}>
             <Text style={styles.subject}>{item.subject}</Text>
             <View

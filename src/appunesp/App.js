@@ -14,6 +14,6 @@ export default StackNavigator(
         },
     },
     {
-        initialRouteName: 'Messages',
+        initialRouteName: 'Message',
     }
 );

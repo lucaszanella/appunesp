@@ -29,6 +29,16 @@ const Sisgrad = new SisgradCrawler(username, password);
 
 type Props = {};
 export default class MessagesViewer extends Component<Props> {
+    static navigationOptions = {
+        title: 'Mensagens',
+        headerStyle: {
+            backgroundColor: '#3F51B5',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+            fontWeight: 'bold',
+        },
+    };
     constructor(props) {
         super(props);
 
