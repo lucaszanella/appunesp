@@ -246,8 +246,11 @@ export class SisgradCrawler {
         }
 
         while (emptyMessages = realm.objects(messagesTable).filtered('message = \"\"').slice(0,5)) {
+            if (emptyMessages.length==0)
+                break
+                
             queue = [];
-
+            
             for (emptyMessage of emptyMessages) {
                 console.log('going to read message ' + emptyMessage.sisgradId);
                 m = this.readMessage(emptyMessage.sisgradId);
