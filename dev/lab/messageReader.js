@@ -17,7 +17,7 @@ read = (page) => {
     subject     = table[1][2];
     sentDate    = table[1][3];
     message     = "";
-    
+
     if (table[0].length==7) { //The easiest way to detect if the table contains attachments or not
       attachments = table[1][4];
       attachments = $('a', attachments).toArray();
@@ -37,4 +37,4 @@ read = (page) => {
     //console.log(attachments);
   });
 }
-[1,2,3,4].map(x=>`message${x}.html`).forEach(read)
+[1,2,3,4].map(x=>`message${x}.html`).forEach(read);

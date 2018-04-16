@@ -1,8 +1,9 @@
 import { AppRegistry } from 'react-native';
-import App from './App';
-//import MessagesViewer from "./messagesViewer";
+import MessagesViewer from './MessagesViewer';
+import MessageViewer from './MessageViewer';
 import LoginScreenView from "./LoginScreenView";
 
-AppRegistry.registerComponent('appunesp', () => App);
+//AppRegistry.registerComponent('appunesp', () => MessagesViewer);
+AppRegistry.registerComponent('appunesp', () => MessageViewer);
 //AppRegistry.registerComponent('appunesp', () => MessagesViewer);
 //AppRegistry.registerComponent('appunesp', () => LoginScreenView);

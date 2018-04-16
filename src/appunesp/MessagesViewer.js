@@ -116,14 +116,11 @@ export default class App extends Component<Props> {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.welcome}>
-                    Unesp
-                </Text>
                 <FlatList
-                data={this.state.data}
-                ItemSeparatorComponent={this.renderSeparator}
-                renderItem={this.renderItem}
-                keyExtractor={item => item.subject+item.sentby+item.sentDate}
+                    data={this.state.data}
+                    ItemSeparatorComponent={this.renderSeparator}
+                    renderItem={this.renderItem}
+                    keyExtractor={item => item.subject+item.sentby+item.sentDate}
                 />
             </View>
         );

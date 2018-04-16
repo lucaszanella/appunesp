@@ -10,3 +10,4 @@ dev/node_modules
 dev/src
 dev/dev
 dev/lab/node_modules
+dev/lab/npm-debug.log
