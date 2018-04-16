@@ -238,7 +238,8 @@ export class SisgradCrawler {
 
     updateMessages = async function() {
         update  = (realm, m) => () => {
-            messages = realm.objects(messagesTable).filtered(`id = "${messageId(m.sisgradId)}"`);
+            console.log(`id = "${messageId(m)}"`);
+            messages = realm.objects(messagesTable).filtered(`id = "${messageId(m)}"`);
             for (message of messages) {
                 message.message = m.message;
             }
@@ -264,7 +265,7 @@ export class SisgradCrawler {
                 console.log('message recorded:');
                 console.log('id: ' + message.sisgradId);
                 console.log('idmd5: ' + messageId(message));
-                b = realm.objects(messagesTable).filtered(`id = "${messageId(message)}"`)
+                b = realm.objects(messagesTable).filtered(`id = "${messageId(message)}"`);
                 for (a of b) {
                     console.log(a);
                 }

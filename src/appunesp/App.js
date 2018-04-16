@@ -95,7 +95,7 @@ export default class App extends Component<Props> {
             <View style={{flex: 9, flexDirection: 'column'}}>
                 <Text style={styles.sentby}  numberOfLines={1}>{item.sentBy}</Text>
                 <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
-                <Text style={styles.message} numberOfLines={1}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
+                <Text style={styles.message} numberOfLines={1}>{item.message}</Text>
             </View>
             <View style={styles.time}>
                 <Text style={styles.timeText}>{parseDate(item.sentDate)}</Text>
