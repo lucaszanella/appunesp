@@ -27,7 +27,7 @@ const date = new Date();
 const Sisgrad = new SisgradCrawler(username, password);
 
 type Props = {};
-export default class App extends Component<Props> {
+export default class MessageViewer extends Component<Props> {
     constructor(props) {
         super(props);
 
@@ -68,6 +68,10 @@ export default class App extends Component<Props> {
         Sisgrad.performLogin().
         //then(readMessages).
         then(updateMessages);
+    }
+
+    _onRefresh() {
+        //this.setState({refreshing: true});
     }
 
     renderSeparator = () => {
@@ -117,6 +121,12 @@ export default class App extends Component<Props> {
         return (
             <View style={styles.container}>
                 <FlatList
+                    refreshControl={
+                        <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this._onRefresh.bind(this)}
+                        />
+                    }
                     data={this.state.data}
                     ItemSeparatorComponent={this.renderSeparator}
                     renderItem={this.renderItem}

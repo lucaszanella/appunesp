@@ -3,3 +3,4 @@ const linkRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0
 export default linkToHref = string => string.replace(linkRegex,function(match){
     return `<a href="${match}">${match}</a>`;
 })
+

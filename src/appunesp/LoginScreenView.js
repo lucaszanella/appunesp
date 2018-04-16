@@ -4,7 +4,7 @@ import { Form, Logo, Wallpaper, Footer } from './login_screen';
 import bgSrc from './login_screen/images/wallpaper2.jpeg';
 
 
-export default class LoginScreen extends Component {
+export default class LoginScreenView extends Component {
   render() {
     return (
       <ImageBackground style={styles.background} source={bgSrc}>
