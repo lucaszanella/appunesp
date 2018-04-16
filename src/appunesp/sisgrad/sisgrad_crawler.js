@@ -26,6 +26,8 @@ const paths = {
 
 clean  = string => string.replace(/[ \t\n]+/g,' ').trim(); //removes extra whitespace
 
+messageId = message => md5(message.sisgradId);
+
 export class SisgradCrawler {
 
     constructor(username, password, userAgent=false) {
@@ -178,9 +180,9 @@ export class SisgradCrawler {
         return data;
     }
 
-    readMessage = async function(id) {
-        r = await this.crawl(paths.read_message_action(id),
-                            {expectUrl : paths.read_message_action(id).path});
+    readMessage = async function(sisgradId) {
+        r = await this.crawl(paths.read_message_action(sisgradId),
+                            {expectUrl : paths.read_message_action(sisgradId).path});
         $ = r.$;
         form        = $('form[name=form_email]');
         table       = $('table', form).first().parsetable(false, false, false);
@@ -190,22 +192,22 @@ export class SisgradCrawler {
         message     = "";
 
         if (table[0].length==7) { //The easiest way to detect if the table contains attachments or not, but could fail easely if something changes
-          attachments = table[1][4];
-          attachments = $('a', attachments).toArray();
-          attachments = attachments.map(x => $(x));
-          attachments = attachments.map(x => (
-                {
-                  link : x.attr('href'), 
-                  title: clean(x.text())
-                }
-          ));
-          message     = clean($(table[0][5]).text());
+            attachments = table[1][4];
+            attachments = $('a', attachments).toArray();
+            attachments = attachments.map(x => $(x));
+            attachments = attachments.map(x => (
+                    {
+                        link : x.attr('href'), 
+                        title: clean(x.text())
+                    }
+            ));
+            message = clean($(table[0][5]).text());
         } else if (table[0].length==6){
             message = clean($(table[0][4]).text());
         }
 
         return {
-            id         : id,
+            sisgradId  : sisgradId,
             sender     : sender,
             subject    : subject,
             message    : message,
@@ -215,30 +217,29 @@ export class SisgradCrawler {
     }
  
     recordMessage = async function (message) {
-        id = md5(message.sisgradId);
-        doc =  {
-                    id             : id                   ,
-                    favorite       : message.favorite     ,
-                    hasAttachment  : message.hasAttachment,
-                    sentBy         : message.sentBy       ,
-                    subject        : message.subject      ,
-                    sentDate       : message.sentDate     ,
-                    readDate       : message.readDate     ,
-                    sisgradId      : message.sisgradId    ,
-                    message        : ''                   ,
-                }
+        id = messageId(message);
+        doc = {
+                id             : id                   ,
+                favorite       : message.favorite     ,
+                hasAttachment  : message.hasAttachment,
+                sentBy         : message.sentBy       ,
+                subject        : message.subject      ,
+                sentDate       : message.sentDate     ,
+                readDate       : message.readDate     ,
+                sisgradId      : message.sisgradId    ,
+                message        : ''                   ,
+            }
 
         if (realm.objects(messagesTable).filtered(`id = "${id}"`).length==0){
-            realm.write(() => realm.create(messagesTable, doc))
+            realm.write(() => realm.create(messagesTable, doc));
             console.log('recording message ' + message + " at " + messagesTable);
         }
     }
 
     updateMessages = async function() {
         update  = (realm, m) => () => {
-            messages = realm.objects(messagesTable).filtered(`id = "${m.id}"`);
+            messages = realm.objects(messagesTable).filtered(`id = "${messageId(m.sisgradId)}"`);
             for (message of messages) {
-                message.id      = m.id;
                 message.message = m.message;
             }
         }
@@ -253,16 +254,19 @@ export class SisgradCrawler {
                 //console.log(m)
                 queue.push(m);
             }
+
             console.log('entering queue');
             for (m of queue) {
                 const message = await m;
-                console.log('message:')
+                console.log('message:');
                 console.log(message);
                 realm.write(update(realm, message));
                 console.log('message recorded:');
-                b = realm.objects(messagesTable).filtered(`id = "${message.id}"`)
+                console.log('id: ' + message.sisgradId);
+                console.log('idmd5: ' + messageId(message));
+                b = realm.objects(messagesTable).filtered(`id = "${messageId(message)}"`)
                 for (a of b) {
-                    console.log(b);
+                    console.log(a);
                 }
             }
         }
