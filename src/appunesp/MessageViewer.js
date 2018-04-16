@@ -7,8 +7,9 @@ import parseDate from './utils/parseDate'
 import initials from './utils/initials'
 import linkToHref from './utils/linkToHref'
 import HTMLView from 'react-native-htmlview';
+const md5 = require("blueimp-md5");
 
-item = {
+exampleItem = {
     subject: 'Mensagem aos alunos inscritos no ENADE 2017 - Concluintes ',
     sentBy: 'Geraldo Forti Pereira da Silva',
     sentDate: '22/11/2017 às 15:52',
@@ -55,6 +56,10 @@ export default class MessageViewer extends Component {
         },
     };
   render() {
+    const { params } = this.props.navigation.state;
+    const id = params ? params.id : null;
+    const item = id ? realm.objects(messagesTable).filtered(`id = "${id}"`)[0] : exampleItem;
+
     return (
       <ScrollView style={{backgroundColor: "#FFFFFF",}}>
         <View style={styles.bigSubject}>

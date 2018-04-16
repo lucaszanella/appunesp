@@ -1,6 +1,6 @@
 import { CookieStore } from '../simple_crawler/cookies.js';
 import { crawl, pathIsFromUrl } from '../simple_crawler/crawler.js';
-import realm, {messagesTable} from '../realm';
+import realm, { messagesTable } from '../realm';
 import escapeRegExp from '../utils/escaperegexp';
 const cheerio = require("cheerio-without-node-native");
 const sisgradDomain = `sistemas.unesp.br`;

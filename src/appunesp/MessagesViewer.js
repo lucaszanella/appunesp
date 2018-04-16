@@ -9,6 +9,7 @@ import {
     View,
     FlatList,
     RefreshControl,
+    TouchableHighlight,
 } from 'react-native';
 const md5 = require("blueimp-md5");
 
@@ -97,25 +98,34 @@ export default class MessagesViewer extends Component<Props> {
         );
     }
 
+    goToMessageReader = (id) => {
+        /* 1. Navigate to the Details route with params */
+        this.props.navigation.navigate('Message', {
+          id: id,
+        })
+    }
+
     renderItem = ({item}) => (
-        <View style={styles.listItem}>
-            <Avatar
-                medium
-                rounded
-                title={this.initials(item.sentBy)}
-                overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
-                onPress={() => console.log("Works!")}
-                activeOpacity={0.7}
-            />
-            <View style={{flex: 9, flexDirection: 'column'}}>
-                <Text style={styles.sentby}  numberOfLines={1}>{item.sentBy}</Text>
-                <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
-                <Text style={styles.message} numberOfLines={1}>{item.message}</Text>
+        <TouchableHighlight onPress={()=>this.goToMessageReader(item.id)} underlayColor='#FFFFFF'>
+            <View style={styles.listItem}>
+                <Avatar
+                    medium
+                    rounded
+                    title={this.initials(item.sentBy)}
+                    overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
+                    onPress={() => console.log("Works!")}
+                    activeOpacity={0.7}
+                />
+                <View style={{flex: 9, flexDirection: 'column'}}>
+                    <Text style={styles.sentby}  numberOfLines={1}>{item.sentBy}</Text>
+                    <Text style={styles.subject} numberOfLines={1}>{item.subject}</Text>
+                    <Text style={styles.message} numberOfLines={1}>{item.message}</Text>
+                </View>
+                <View style={styles.time}>
+                    <Text style={styles.timeText}>{parseDate(item.sentDate)}</Text>
+                </View>
             </View>
-            <View style={styles.time}>
-                <Text style={styles.timeText}>{parseDate(item.sentDate)}</Text>
-            </View>
-        </View>
+        </TouchableHighlight>
     )
 
     initials = name => {
