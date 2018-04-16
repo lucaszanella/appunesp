@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pt-br" lang="pt-br" data-ng-app="null">
+    <head>
+        
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>:: UNESP : Portal de Sistemas ::</title>
+<link rel="shortcut icon" href="/sentinela/skinunesp/imgs/favicon.ico" />
+<link rel="icon" href="/sentinela/skinunesp/imgs/favicon.ico" />
+<meta name="description" content="null" />
+<meta name="keywords" content="Módulo, Autenticação, Sistemas, UNESP, Sentinela" />
+<meta name="robots" content="index" />
+<meta name="author" content="UNESP" />
+<meta name="language" content="pt-br" />
+<meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="pragma" content="no-cache" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/unesppadrao_core_nowidth.css" type="text/css" />
+<link rel="stylesheet" media="print" href="/sentinela/skinunesp/css/unesppadrao_core_print.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/unesppadrao_sistemas.css" type="text/css" />
+<link rel="stylesheet" media="print" href="/sentinela/skinunesp/css/unesppadrao_sistemas_print.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.tooltip.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.tooltip.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery.Jcrop.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/jquery_ui/jquery-ui-1.8.4.custom.css" type="text/css" />
+<link rel="stylesheet" media="screen, projection" href="/sentinela/skinunesp/css/tipsy.css" type="text/css" />
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.xmldom.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.Jcrop.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.columnize.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.webcam.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.delegate.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.form.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.currency.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.highlight.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tipsy.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tooltip.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.field.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery-ui.min.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.cookie.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.ajaxmanager.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.fileupload.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/jquery.tablednd.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_form.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_menuflutuante.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_onload.js"></script>
+<script language="JavaScript" type="text/javascript" src="/sentinela/skinunesp/js/unesppadrao_navegador.js"></script>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="header" content="Visualizar mensagem"/>
+    
+    <script language="JavaScript" type="text/javascript">
+        function documentOnLoad() {
+        	$("span.spanInfo").tooltip({
+                track: true, // Para que possa se movimentar
+                fixPNG: true
+            });           
+        }
+    </script>
+    
+    <style type="text/css">
+    	.spanInfo {
+    		cursor: pointer;
+    	}
+    </style>
+        
+            <script type="text/javascript">          
+                var sessionTimeOut = 1800;
+                var sessionTimePassed;
+                var sessionCounterId;
+                
+                $(document).ready(function() {
+					verifySessionTimedOut();
+                });
+                
+                $(document).ajaxSuccess(function(event, XMLHttpRequest, ajaxOptions) {
+                    if (sessionTimePassed < sessionTimeOut &&
+                        ajaxOptions.url.indexOf('/sentinela') == 0) {
+                        sessionTimePassed = 0;
+                    }
+                });
+                
+                function verifySessionTimedOut() {
+                	sessionTimePassed = 0;
+                	
+                    sessionCounterId = setInterval(function() {
+                        sessionTimePassed += 1;
+                        remaining = sessionTimeOut - sessionTimePassed;
+                        
+                        if (remaining == 59) {
+        	        		$( "#dialog-expire" ).dialog({
+        	        			closeOnEscape: false,
+        	        			open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();},        	        			
+        	        			modal: true,
+        	        			buttons: {
+        	        				"Ainda estou aqui": function () {
+        	        					$("#dialog-expire").dialog('close');
+        	        					if(remaining > 0) {
+	        	        					$.post("principal.jsp").always(function(){});
+	        	        					clearInterval(sessionCounterId);
+	        	        					verifySessionTimedOut();
+        	        					}
+        	        				}
+        	        			}
+        	        		});                        	
+                        }
+                        
+                        if (remaining == 0) {
+                            clearInterval(sessionCounterId);
+                            $("#time").text("Sessão expirada!");
+                            return;
+                        }
+                        
+                        min = "" + Math.floor(remaining / 60);
+                        sec = "" + (remaining % 60);
+                        if (min.length == 1)
+                            min = "0" + min;
+                        if (sec.length == 1)
+                            sec = "0" + sec;
+                        text = min + ":" + sec;
+                        $("#time").text(text);
+                    }, 1000);
+                }
+            </script>
+        
+    </head>
+    <body onload="documentOnLoad()">
+    	<div id="dialog-expire" title="Revalidar sessão?" style="display:none;">
+			<p>
+				<span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+				Tempo de utilização expirando. Revalide sua sessão!  
+			</p>
+		</div>
+    	
+    	
+        
+<div id="geral">
+<div id="header">
+<div class="tit">
+<h1>UNIVERSIDADE ESTADUAL PAULISTA</h1>
+<h1>&quot;J&Uacute;LIO DE MESQUITA FILHO&quot;</h1>
+<h1 class="cp"> </h1>
+</div>
+<div class="unid">
+<h1>Portal de Sistemas</h1>
+</div>
+<div class="unids">
+<h1>Portal de Sistemas</h1>
+</div>
+<div class="menu"></div>
+</div>
+
+        
+<div id="e">
+<div id="emapa"><!-- MONTADO EM TEMPO DE EXECUÇÃO PELO JAVASCRIPT --></div>
+<div id="em">
+<ul id="menuesq">
+            
+
+    
+
+
+<li><a href="/sentinela/sentinela.showDesktop.action" title="Listar módulos disponiveis">Módulos</a></li>
+<li class="menu-esq-comfilho"><a href="#" title="Mensagens" class="comfilho">Mensagens</a>
+  <ul>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=recebidas" title="Recebidas">Recebidas</a></li>
+    <li><a href="/sentinela/common.openMessage.action?emailTipo=enviadas" title="Enviadas">Enviadas</a></li>                    
+  </ul>
+</li>
+<li><a href="/sentinela/user.openChangePassword.action" title="Alterar Senha">Alterar Senha</a></li>
+<li><a href="/sentinela/user.openChangeEmail.action" title="Alterar E-mail de Login">Alterar E-mail</a></li>
+
+<li><a href="/sentinela/common.logout.action" title="Sair">Sair</a></li>
+
+
+
+        
+</ul>
+<div id="dev">
+</div>
+</div>
+</div>
+<script language="JavaScript" type="text/javascript">
+<!--
+try {
+CarregaMenu('menuesq');
+} catch (e) { }
+//-->
+</script>
+<hr />
+
+        <div id="c" align="center">
+            <div id="ct" align="left">
+            	<div id="toolbar">
+                    <span id="time"></span>
+                    <a href="javascript:window.print()"><img src="/sentinela/skinunesp/imgs/icn_print.gif" alt="Imprimir" />Imprimir</a>
+                    <a href="javascript:redimensionar_toggle()"><img id="toolbar_maximizar" alt="Maximizar" src="/sentinela/skinunesp/imgs/window_fullscreen.png"/><img id="toolbar_restaurar" alt="Restaurar" src="/sentinela/skinunesp/imgs/window_nofullscreen.png"/></a><hr style="clear:both;display:none;" /></div>
+                <h2>Mensagem recebidas</h2>
+            </div>
+            <div id="cc">
+                <div class="infomsg">Visualizar mensagem</div>
+
+
+
+
+
+               <!-- Exibe erros de banco de dados -->                
+                
+
+                <!-- Exibe mensagens caso existam -->
+                
+                
+                <!-- Exibe erros caso existam -->
+                
+
+                <center>
+  <form name="form_email" method="post" action="">
+    <table width="90%">
+        <tr>
+            <th colspan="2">Mensagem</th>
+        </tr>
+        
+          <tr>
+            <td width="5%" align="center" nowrap="nowrap"> <b>De:  </b></td>
+            <td width="85%">Geraldo Forti Pereira da Silva</td>            
+          </tr>
+        
+                     
+        <tr>
+            <td width="5%" nowrap="nowrap"><b>Assunto</b></td>
+            <td width="85%">Mensagem aos alunos inscritos no ENADE 2017 - Concluintes </td>
+        </tr>
+        <tr>
+            <td width="5%" nowrap="nowrap"><b>Data de envio</b></td>
+            <td width="85%">22/11/2017 às 15:52</td>
+        </tr>                 
+        
+        <tr>            
+            <td colspan="2" align="left" bgcolor="white">
+              ENADE 2017<br />
+<br />
+REALIZA&Ccedil;&Atilde;O DA PROVA E QUESTION&Aacute;RIO DO ESTUDANTE<br />
+<br />
+Conforme informado anteriormente, a prova do ENADE ser&aacute; realizada dia 26/11/2017, pr&oacute;ximo domingo.<br />
+<br />
+De acordo com Edital INEP, os port&otilde;es para adentrar no local da prova ser&atilde;o abertos &agrave;s 12 horas e fechados &agrave;s 13 horas.<br />
+<br />
+Lembramos que o estudante inscrito no ENADE 2017 dever&aacute; realizar o primeiro acesso em: http://enade.inep.gov.br/enade/#!/cadastrarEstudante<br />
+<br />
+Ap&oacute;s o primeiro acesso, o estudante:<br />
+- receber&aacute; senha provis&oacute;ria no e-mail informado durante o primeiro acesso ao sistema;<br />
+- precisar&aacute; gerar uma senha definitiva, alterando a provis&oacute;ria;<br />
+- preencher o cadastro e<br />
+- responder o question&aacute;rio do estudante (obrigat&oacute;rio).<br />
+<br />
+Desde 13/11/2017 o INEP disponibilizou a informa&ccedil;&atilde;o quanto aos locais de prova (http://portal.inep.gov.br/artigo/-/asset_publisher/B4AQV9zFY7Bv/content/locais-de-prova-do-enade-2017-ja-estao-disponiveis-para-consulta/21206), sendo que somente ter&aacute; acesso ao local de prova ap&oacute;s ter sido preenchido o question&aacute;rio do estudante.<br />
+<br />
+Assim, &eacute; IMPORTANTE que os estudantes inscritos realizem o preenchimento tanto do Cadastro quanto do Question&aacute;rio.<br />
+<br />
+Os alunos que n&atilde;o realizarem esse procedimento estar&atilde;o em situa&ccedil;&atilde;o irregular junto ao ENADE e n&atilde;o poder&atilde;o colar grau, conforme determinado no Edital do ENADE 2017, item&nbsp; 16.3: &quot;O Estudante concluinte que estiver em situa&ccedil;&atilde;o irregular perante o Exame n&atilde;o ter&aacute; certificado de conclus&atilde;o de curso ou diploma expedidos, tendo em vista que o Enade &eacute; um componente curricular obrigat&oacute;rio do curso, nos termos do &sect; 5&ordm; do art. 5&ordm; da Lei n&ordm; 10.861 de 14 de abril de 2004&quot;.<br />
+<br />
+O acesso ao Sistema do ENADE &eacute; feito pelo link http://enade.inep.gov.br/enade/#!/index.<br />
+<br />
+Em caso de problema com o acesso, favor entrar em contato com o INEP:<br />
+http://mec.cube.call.inf.br/auth-web/login?redirect_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fauth%2Fcallback&amp;requested_uri=http%3A%2F%2Ffale-conosco.mec.call.inf.br%2Fsecoes%2F&amp;token_aplicacao=e3lhqm5iVYbcOEfxMMvpBw#/0<br />
+<br />
+<br />
+Eliana Corr&ecirc;a Contiero<br />
+Diretora T&eacute;cnica Acad&ecirc;mica-DTA<br />
+Instituto de Geoci&ecirc;ncias e Ci&ecirc;ncias Exatas<br />
+UNESP-C&acirc;mpus de Rio Claro<br />
+(19) 3526 9009
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="barrabotao">
+                <center>
+                  <input name="btn_voltar" type="button" value="Voltar" class="botao" onClick="window.location.href='/sentinela/common.openMessage.action?emailTipo=recebidas';">
+                </center>                
+            </td>
+        </tr>    
+    </table>
+  </form>
+ </center>
+            </div>
+        </div>
+
+        
+<hr />
+<div id="f">
+<div id="fb">
+<div class="u">
+Portal de Sistemas
+</div>
+<div class="m">
+<ul>
+            <li><a href="/sentinela/common.home.action" class="pri" title="Home">Inicio</a></li>
+            <li><a href='http://www.unesp.br' target="_blank" title="Institucional">Institucional</a></li>
+            
+                <li><a href="/sentinela/common.logout.action" class="ult" title="Portal">Sair</a></li>
+            
+        
+</ul>
+</div>
+</div>
+</div>
+</div>
+        <div id="messagetop">
+            <div id="messagetop_close"><img border="0" src="/sentinela/skinunesp/imgs/invalid.png" alt="Fechar" /></div>
+            <div id="messagetop_content"></div>
+        </div>
+    </body>
+</html>

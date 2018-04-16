@@ -4,7 +4,7 @@ clean  = string => string.replace(/[ \t\n]+/g,' ').trim(); //removes extra white
 
 
 var fs = require('fs');
-fs.readFile('./message2.html', function (err, data) {
+fs.readFile('./message4.html', function (err, data) {
   if (err) {
     throw err; 
   }
@@ -12,21 +12,25 @@ fs.readFile('./message2.html', function (err, data) {
   cheerioTableparser($);
   form        = $('form[name=form_email]');
   table       = $('table', form).first().parsetable(false, false, false);
-  message     = clean($(table[0][5]).text());
-  attachments = table[1][4];
-  attachments = $('a', attachments).toArray();
-  console.log($(attachments[1]).attr('href'));
-  attachments = attachments.map(x => $(x));
-  attachments = attachments.map(x => (
-        {
-          link : x.attr('href'), 
-          title: clean(x.text())
-        }
-  ));
   sender   = table[1][1];
   subject  = table[1][2];
   sentDate = table[1][3];
+  message = "";
+  if (table[0].length==7) { //The easiest way to detect if th table contains attachments or not
+    attachments = table[1][4];
+    attachments = $('a', attachments).toArray();
+    attachments = attachments.map(x => $(x));
+    attachments = attachments.map(x => (
+          {
+            link : x.attr('href'), 
+            title: clean(x.text())
+          }
+    ));
+    message     = clean($(table[0][5]).text());
+  } else {
+    message     = clean($(table[0][4]).text());
+  }
 
-  console.log(message);
-  console.log(attachments);
+  console.log(sender);
+  //console.log(attachments);
 });

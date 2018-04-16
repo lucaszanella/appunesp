@@ -184,19 +184,24 @@ export class SisgradCrawler {
         $ = r.$;
         form        = $('form[name=form_email]');
         table       = $('table', form).first().parsetable(false, false, false);
-        message     = clean($(table[0][5]).text());
-        attachments = table[1][4];
-        attachments = $('a', attachments).toArray();
-        attachments = attachments.map(x => $(x));
-        attachments = attachments.map(x => (
-                {
-                    link : x.attr('href'), 
-                    title: clean(x.text())
-                }
-        ));
         sender   = table[1][1];
         subject  = table[1][2];
         sentDate = table[1][3];
+        message = "";
+        if (table[0].length==7) { //The easiest way to detect if th table contains attachments or not
+          attachments = table[1][4];
+          attachments = $('a', attachments).toArray();
+          attachments = attachments.map(x => $(x));
+          attachments = attachments.map(x => (
+                {
+                  link : x.attr('href'), 
+                  title: clean(x.text())
+                }
+          ));
+          message     = clean($(table[0][5]).text());
+        } else {
+          message     = clean($(table[0][4]).text());
+        }
 
         return {
             id         : id,
