@@ -4,8 +4,16 @@ import MessageViewer from './MessageViewer';
 import LoginScreenView from "./LoginScreenView";
 import { StackNavigator } from 'react-navigation';
 
-export default StackNavigator({
-  Home: {
-    screen: MessageViewer,
-  },
-});
+export default StackNavigator(
+    {
+        Messages: {
+            screen: MessagesViewer,
+        },
+        Message: {
+            screen: MessageViewer,
+        },
+    },
+    {
+        initialRouteName: 'Messages',
+    }
+);

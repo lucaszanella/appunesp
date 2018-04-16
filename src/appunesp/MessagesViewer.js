@@ -8,6 +8,7 @@ import {
     Text,
     View,
     FlatList,
+    RefreshControl,
 } from 'react-native';
 const md5 = require("blueimp-md5");
 
@@ -27,7 +28,7 @@ const date = new Date();
 const Sisgrad = new SisgradCrawler(username, password);
 
 type Props = {};
-export default class MessageViewer extends Component<Props> {
+export default class MessagesViewer extends Component<Props> {
     constructor(props) {
         super(props);
 

@@ -6,6 +6,6 @@ import LoginScreenView from "./LoginScreenView";
 import App from './App';
 
 AppRegistry.registerComponent('appunesp', () => App);
-AppRegistry.registerComponent('appunesp', () => MessagesViewer);
-AppRegistry.registerComponent('appunesp', () => MessageViewer);
+//AppRegistry.registerComponent('appunesp', () => MessagesViewer);
+//AppRegistry.registerComponent('appunesp', () => MessageViewer);
 //AppRegistry.registerComponent('appunesp', () => LoginScreenView);
