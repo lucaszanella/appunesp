@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { List, ListItem, SearchBar, Avatar } from "react-native-elements";
 import { SisgradCrawler, schemas as SisgradSchemas } from './sisgrad/sisgrad_crawler.js';
 import { username, password } from './credentials.js';
+import randomColorPicker from './utils/randomColorPicker'
+import parseDate from './utils/parseDate'
+import initials from './utils/initials'
 import {
     Platform,
     StyleSheet,
@@ -13,17 +16,6 @@ import {
 } from 'react-native';
 const md5 = require("blueimp-md5");
 
-dateRegex = /(\d{4})-(\d+)-(\d+)\s(\d+):(\d+):(\d+)/;
-
-parseDate = dateString => {
-    x = dateRegex.exec(dateString);
-    
-    if (date.getFullYear() != parseInt(x[1]))
-        return x[2] + "/" + x[1]; 
-    
-    return x[3] + "/" + x[2];
-}
-const date = new Date();
 //const Realm         = require('realm');
 //const realm         = new Realm(SisgradSchemas);
 const Sisgrad = new SisgradCrawler(username, password);
@@ -111,7 +103,7 @@ export default class MessagesViewer extends Component<Props> {
                 <Avatar
                     medium
                     rounded
-                    title={this.initials(item.sentBy)}
+                    title={initials(item.sentBy)}
                     overlayContainerStyle={{backgroundColor: randomColorPicker(item.sentBy)}}
                     onPress={() => console.log("Works!")}
                     activeOpacity={0.7}
@@ -127,16 +119,6 @@ export default class MessagesViewer extends Component<Props> {
             </View>
         </TouchableHighlight>
     )
-
-    initials = name => {
-        x = name.split(" ", 2);
-        if (x.length>=2)
-          return x[0][0]+x[1][0]
-        else if (x.length==1)
-          return x[0][0]
-        else 
-          return "XX";
-    }
 
     render() {
         return (
@@ -156,27 +138,6 @@ export default class MessagesViewer extends Component<Props> {
             </View>
         );
     }
-}
-
-randomColorPicker = string => randomColors[md5(string)[0]]; //TODO: update color picker function to be more light
-
-const randomColors = {
-    0: "#EF5350",
-    1: "#EC407A",
-    2: "#4A148C",
-    3: "#7986CB",
-    4: "#512DA8",
-    5: "#009688",
-    6: "#81C784",
-    7: "#DCE775",
-    8: "#FFA000",
-    9: "#A1887F",
-    a: "#FF8A65",
-    b: "#B0BEC5",
-    c: "#00B0FF",
-    d: "#D1C4E9",
-    e: "#C51162",
-    f: "#E0F2F1",
 }
 
 const styles = StyleSheet.create({

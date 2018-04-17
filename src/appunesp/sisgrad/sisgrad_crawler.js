@@ -238,11 +238,10 @@ export class SisgradCrawler {
 
     updateMessages = async function() {
         update  = (realm, m) => () => {
-            console.log(`id = "${messageId(m)}"`);
-            messages = realm.objects(messagesTable).filtered(`id = "${messageId(m)}"`);
-            for (message of messages) {
-                message.message = m.message;
-            }
+            console.log(`id__ = "${messageId(m)}"`);
+            message = realm.objects(messagesTable).filtered(`id = "${messageId(m)}"`)[0];
+            message.message = m.message;
+            console.log(message);
         }
 
         while (emptyMessages = realm.objects(messagesTable).filtered('message = \"\"').slice(0,5)) {
@@ -262,16 +261,14 @@ export class SisgradCrawler {
             console.log('entering queue');
             for (m of queue) {
                 const message = await m;
-                console.log('message:');
-                console.log(message);
+                //console.log('message:');
+                //console.log(message);
                 realm.write(update(realm, message));
                 console.log('message recorded:');
-                console.log('id: ' + message.sisgradId);
-                console.log('idmd5: ' + messageId(message));
-                b = realm.objects(messagesTable).filtered(`id = "${messageId(message)}"`);
-                for (a of b) {
-                    console.log(a);
-                }
+                //console.log('id: ' + message.sisgradId);
+                //console.log('idmd5: ' + messageId(message));
+                b = realm.objects(messagesTable).filtered(`id = "${messageId(message)}"`)[0];
+                console.log(b);
             }
         }
     }
