@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { ActivityIndicator, StyleSheet, Text } from 'react-native'
 import { View } from 'react-native-animatable'
 
@@ -16,7 +16,7 @@ const CustomButton = ({ onPress, isEnabled, isLoading, text, buttonStyle, textSt
     </View>
   )
 }
-
+/*
 CustomButton.propTypes = {
   onPress: PropTypes.func,
   isEnabled: PropTypes.bool,
@@ -25,6 +25,7 @@ CustomButton.propTypes = {
   buttonStyle: PropTypes.any,
   textStyle: PropTypes.any
 }
+*/
 
 CustomButton.defaultProps = {
   onPress: () => null,

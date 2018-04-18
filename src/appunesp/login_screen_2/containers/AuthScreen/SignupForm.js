@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from 'react-native-animatable'
 
@@ -7,11 +7,13 @@ import CustomTextInput from '../../components/CustomTextInput'
 import metrics from '../../config/metrics'
 
 export default class SignupForm extends Component {
+  /*
   static propTypes = {
     isLoading: PropTypes.bool.isRequired,
     onSignupPress: PropTypes.func.isRequired,
     onLoginLinkPress: PropTypes.func.isRequired
   }
+  */
 
   state = {
     email: '',

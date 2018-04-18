@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { StyleSheet } from 'react-native'
 import { Text, View } from 'react-native-animatable'
 
@@ -6,10 +6,12 @@ import CustomButton from '../../components/CustomButton'
 import metrics from '../../config/metrics'
 
 export default class Opening extends Component {
+/*
   static propTypes = {
     onCreateAccountPress: PropTypes.func.isRequired,
     onSignInPress: PropTypes.func.isRequired
   }
+  */
 
   render () {
     return (

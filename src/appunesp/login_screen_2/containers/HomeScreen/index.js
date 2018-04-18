@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import CustomButton from '../../components/CustomButton'
@@ -7,9 +7,11 @@ import CustomButton from '../../components/CustomButton'
  * Just a centered logout button.
  */
 export default class HomeScreen extends Component {
+  /*
   static propTypes = {
     logout: PropTypes.func
   }
+  */
 
   render () {
     return (

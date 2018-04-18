@@ -34,22 +34,14 @@ export default class LoginAnimation extends Component {
    * If the user is authenticated (isAppReady) show the HomeScreen, otherwise show the AuthScreen
    */
   render () {
-    if (this.state.isAppReady) {
-      return (
-        <HomeScreen
-          logout={() => this.setState({ isLoggedIn: false, isAppReady: false })}
-        />
-      )
-    } else {
-      return (
-        <AuthScreen
-          login={this._simulateLogin}
-          signup={this._simulateSignup}
-          isLoggedIn={this.state.isLoggedIn}
-          isLoading={this.state.isLoading}
-          onLoginAnimationCompleted={() => this.setState({ isAppReady: true })}
-        />
-      )
-    }
+    return (
+      <AuthScreen
+        login={this._simulateLogin}
+        signup={this._simulateSignup}
+        isLoggedIn={this.state.isLoggedIn}
+        isLoading={this.state.isLoading}
+        onLoginAnimationCompleted={() => this.setState({ isAppReady: true })}
+      />
+    )
   }
 }

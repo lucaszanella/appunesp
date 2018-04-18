@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { KeyboardAvoidingView, LayoutAnimation, Platform, StyleSheet, UIManager } from 'react-native'
 import { Image, View } from 'react-native-animatable'
 
@@ -42,6 +42,7 @@ if (Platform.OS === 'android') UIManager.setLayoutAnimationEnabledExperimental(t
  *   2. fadeOut the logo, 3. tells the container that the login animation has completed and that the app is ready to show the next screen (HomeScreen).
  */
 export default class AuthScreen extends Component {
+  /*
   static propTypes = {
     isLoggedIn: PropTypes.bool.isRequired,
     isLoading: PropTypes.bool.isRequired,
@@ -49,6 +50,7 @@ export default class AuthScreen extends Component {
     login: PropTypes.func.isRequired,
     onLoginAnimationCompleted: PropTypes.func.isRequired // Called at the end of a succesfull login/signup animation
   }
+  */
 
   state = {
     visibleForm: null // Can be: null | SIGNUP | LOGIN
