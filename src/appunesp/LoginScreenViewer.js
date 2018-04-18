@@ -9,6 +9,9 @@ import HomeScreen from './login_screen_2/containers/HomeScreen'
  * probably use a state management library like Redux or MobX to handle the state (if your app gets bigger).
  */
 export default class LoginAnimation extends Component {
+  static navigationOptions = {
+    header: null,
+  };
   state = {
     isLoggedIn: false, // Is the user authenticated?
     isLoading: false, // Is the user loggingIn/signinUp?

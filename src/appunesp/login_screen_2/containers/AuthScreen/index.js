@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { KeyboardAvoidingView, LayoutAnimation, Platform, StyleSheet, UIManager } from 'react-native'
 import { Image, View } from 'react-native-animatable'
 
-import imgLogo from '../../images/logo.png'
+import imgLogo from '../../../resources/unesp_sketch_logo.svg.png'
 import metrics from '../../config/metrics'
 
 import Opening from './Opening'
