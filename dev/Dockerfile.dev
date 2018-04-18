@@ -25,11 +25,10 @@ RUN apt-get install -y nodejs \
                        unzip \
                        lib32stdc++6 \
                        lib32z1 \
+                       git \
     && apt-get clean
 
 RUN npm install -g react-native-cli yarn && npm cache clean -g
-
-RUN 
 
 #RUN yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses &&            \
 #    $ANDROID_HOME/tools/bin/sdkmanager  "build-tools;23.0.2"          \

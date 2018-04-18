@@ -49,12 +49,12 @@ export class SisgradCrawler {
                                           options) { //If for some reason we got unlogged
         response = () => crawl(path, 
                                {
-                                postData     : options.postData, 
-                                contentType  : options.contentType, 
-                                userAgent    : options.userAgent ? options.userAgent : this.userAgent,
-                                redirect     : options.redirect,
-                                expectUrl    : options.expectUrl,
-                                expectThrow  : options.expectThrow
+                                    postData     : options.postData, 
+                                    contentType  : options.contentType, 
+                                    userAgent    : options.userAgent ? options.userAgent : this.userAgent,
+                                    redirect     : options.redirect,
+                                    expectUrl    : options.expectUrl,
+                                    expectThrow  : options.expectThrow
                                })
         r = await response();
 

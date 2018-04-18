@@ -5,6 +5,9 @@ import bgSrc from './login_screen/images/wallpaper2.jpeg';
 
 
 export default class LoginScreenView extends Component {
+  static navigationOptions = {
+    header: null,
+  };
   render() {
     return (
       <ImageBackground style={styles.background} source={bgSrc}>

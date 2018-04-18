@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import Button from 'apsl-react-native-button'
 
 import UserInput from './UserInput';
 import ButtonSubmit2 from './ButtonSubmit2';
@@ -53,7 +54,7 @@ export default class Form extends Component {
           autoCapitalize={'none'}
           autoCorrect={false}
         />
-        <ButtonSubmit2 placeholder="LOGIN"/>
+        <Button style={styles.buttonStyle5} textStyle={styles.textStyle6}>LOGIN </Button>
 
       </View>
     );
@@ -67,5 +68,12 @@ const styles = StyleSheet.create({
   textInput: {
     flex:1,
     height: 50,
+  },
+  textStyle6: {
+    color: 'white',
+  },
+  buttonStyle5: {
+    borderColor: '#2980b9',
+    backgroundColor: '#3498db'
   },
 });
