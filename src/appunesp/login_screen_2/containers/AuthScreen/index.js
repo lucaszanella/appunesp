@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { KeyboardAvoidingView, LayoutAnimation, Platform, StyleSheet, UIManager } from 'react-native'
+import { KeyboardAvoidingView, LayoutAnimation, Platform, StyleSheet, UIManager, ImageBackground } from 'react-native'
 import { Image, View } from 'react-native-animatable'
 
 import imgLogo from '../../../resources/unesp_sketch_logo.svg.png'
@@ -53,7 +53,7 @@ export default class AuthScreen extends Component {
   */
 
   state = {
-    visibleForm: null // Can be: null | SIGNUP | LOGIN
+    visibleForm: 'LOGIN' // Can be: null | SIGNUP | LOGIN
   }
 
   componentWillUpdate (nextProps) {
@@ -89,7 +89,7 @@ export default class AuthScreen extends Component {
     // The following style is responsible of the "bounce-up from bottom" animation of the form
     const formStyle = (!visibleForm) ? { height: 0 } : { marginTop: 40 }
     return (
-      <View style={styles.container}>
+      <ImageBackground style={styles.container} source={{uri:'http://freshwallpapers.net/download/8778/1024x768/download/new-material-design.jpg'}}>
         <Image
           animation={'bounceIn'}
           duration={1200}
@@ -126,7 +126,7 @@ export default class AuthScreen extends Component {
             />
           )}
         </KeyboardAvoidingView>
-      </View>
+      </ImageBackground>
     )
   }
 }

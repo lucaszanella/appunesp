@@ -54,7 +54,7 @@ export default class LoginForm extends Component {
           <CustomTextInput
             name={'password'}
             ref={(ref) => this.passwordInputRef = ref}
-            placeholder={'Password'}
+            placeholder={'Senha'}
             editable={!isLoading}
             returnKeyType={'done'}
             secureTextEntry={true}
@@ -71,7 +71,7 @@ export default class LoginForm extends Component {
               isLoading={isLoading}
               buttonStyle={styles.loginButton}
               textStyle={styles.loginButtonText}
-              text={'Log In'}
+              text={'Entrar'}
             />
           </View>
           <Text
@@ -82,7 +82,7 @@ export default class LoginForm extends Component {
             duration={600}
             delay={400}
           >
-            {'Not registered yet?'}
+            {'Não usar Sisgrad'}
           </Text>
         </View>
       </View>

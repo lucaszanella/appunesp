@@ -3,6 +3,7 @@ import MessagesViewer from './MessagesViewer';
 import MessageViewer from './MessageViewer';
 import LoginScreenView from "./LoginScreenView";
 import LoginScreenView2 from "./LoginScreenViewer";
+import ClassesViewer from './ClassesViewer'
 
 import { StackNavigator } from 'react-navigation';
 
@@ -17,8 +18,11 @@ export default StackNavigator(
         Message: {
             screen: MessageViewer,
         },
+        Classes: {
+            screen: ClassesViewer,
+        },
     },
     {
-        initialRouteName: 'Login',
+        initialRouteName: 'Classes',
     }
 );
