@@ -1,5 +1,6 @@
 /src/appunesp/node_modules
 !/src/appunesp/node_modules/.gitkeep
+/src/appunesp/react-native-pagination/
 .idea
 src/lab/node_modules
 src/appunesp/credentials.js

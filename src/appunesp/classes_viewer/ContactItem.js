@@ -69,7 +69,7 @@ let TagColor="#33333"
 }
 
 
-ListItem.PropTypes={
+ListItem.propTypes={
   key:PropTypes.number,
   onPressItem:PropTypes.function,
   // selected:PropTypes.boolean,

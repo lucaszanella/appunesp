@@ -195,7 +195,7 @@ position:"absolute",
 
 
 
-Tweet.PropTypes={
+Tweet.propTypes={
   id:PropTypes.number,
     index:PropTypes.number,
     key:PropTypes.number,
